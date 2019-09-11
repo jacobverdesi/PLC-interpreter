@@ -1,3 +1,8 @@
+/**
+ * Interpreter project
+ * Scanner class?
+ * @author: Jacob Verdesi (jxv3386@rit.edu()
+ */
 
 import java.io.*;
 import java.util.*;
@@ -8,11 +13,15 @@ import static java.lang.Character.getNumericValue;
 import static java.lang.Character.isLetter;
 
 public class Scan {
-    static public final String DELIMITER = "((?<=%1$s)|(?=%1$s))";
-   // static public final String DELIMITERS = String.format(DELIMITER+""+DELIMITER+DELIMITER+DELIMITER,";","\\(","\\)",",");
+    static private final String DELIMITER = "((?<=%1$s)|(?=%1$s))";
+
+    /**
+     * Takes in file name reads line by line
+     * @param filename
+     * @return list of lines
+     */
     private static List<String> readFile(String filename){
         List<String> lines = new ArrayList<String>();
-
         try{
             BufferedReader reader = new BufferedReader(new FileReader(filename));
             String line;
@@ -28,11 +37,20 @@ public class Scan {
             return null;
         }
     }
+
+    /**
+     * Tokenizer goes through each line and splits at the Delimiters
+     * Then it splits at the strings
+     * Remove empty tokens
+     * //TODO: concatnate quote tokens together
+     * @param lines
+     * @return
+     */
     private static List<String> tokenizer(List<String> lines){
         List<String> tokens = new ArrayList<String>();
         int lineNum=0;
         for (String line:lines){
-            String[] tok=line.split(String.format(DELIMITER,"[()+\\-\\*/=,;]"));
+            String[] tok=line.split(String.format(DELIMITER,"[()+\\-\\*/^=,;]"));
             for (String to:tok) {
                 String[] tok2=to.split("\\s");
                 tokens.addAll(Arrays.asList(tok2));
@@ -42,10 +60,14 @@ public class Scan {
         return tokens;
     }
 
-    public static void printList(List<String> tokens){
+    /**
+     * A pretty print to see the tokens
+     * @param tokens
+     */
+    private static void printList(List<String> tokens){
         for (String token:tokens) {
             if (token.equals(";")) {
-                System.out.println(""+token+"");
+                System.out.println("["+token+"]");
             } else {
                 System.out.print("["+token+"] ");
             }
