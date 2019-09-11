@@ -22,7 +22,7 @@ public class Scan {
             return lines;
         }
         catch (Exception e) {
-            System.err.format("Exception occurred trying to read '%s'.", filename);
+            System.err.format("Exception occurred trying to read '%s'.\n", filename);
             e.printStackTrace();
             return null;
         }
@@ -37,11 +37,13 @@ public class Scan {
             for (int i=0; i < chars.length;i++){
                 Character c=chars[i];
                 char ahead=' ';
-                if(i!=chars.length-1) {
+                if(i<chars.length-1) {
                     ahead = chars[i + 1];
                 }
-                if(state==DFAstate.Q0){
 
+                System.out.println("i: "+i+" current: "+c+" ahead: "+ahead + " state: "+state);
+
+                if(state==DFAstate.Q0){
                     if(c==' '|| c=='\n'){
                         state=DFAstate.Q0;
                     }
@@ -64,17 +66,18 @@ public class Scan {
                         state = DFAstate.Q14;
                     }
                     else{
-                        System.err.format("Invalid syntax line = %s",lineNum);
+                        System.err.format("Invalid syntax line = %s \n",lineNum);
                     }
                 }
                 else if(state==DFAstate.Q1){
-                    if(Character.isLetter(c)||Character.isDigit(c)){
+                    if(Character.isLetter(c)||Character.isDigit(c)) {
                         curr.append(c);
-                    }
-                    else if((!Character.isLetter(ahead)||!Character.isDigit(ahead))){
-                        tokens.add(curr.toString());
-                        curr.delete(0,curr.length());
-                        state=DFAstate.Q0;
+                        if (!Character.isLetter(ahead) && !Character.isDigit(ahead)) {
+                            System.out.println("test");
+                            tokens.add(curr.toString());
+                            curr.delete(0, curr.length());
+                            state = DFAstate.Q0;
+                        }
                     }
                 }
                 else if(state==DFAstate.Q2){
@@ -82,7 +85,7 @@ public class Scan {
                         curr.append(c);
                     }
                     else {
-                        System.err.format("Invalid syntax line = %s",lineNum);
+                        System.err.format("Invalid syntax line = %s\n",lineNum);
                     }
                 }
                 else if(state==DFAstate.Q3){
@@ -99,7 +102,7 @@ public class Scan {
                         state=DFAstate.Q0;
                     }
                     else {
-                        System.err.format("Invalid syntax line = %s",lineNum);
+                        System.err.format("Invalid syntax line = %s\n",lineNum);
                     }
                 }
                 else if(state==DFAstate.Q4){
@@ -112,11 +115,11 @@ public class Scan {
                         state=DFAstate.Q0;
                     }
                     else {
-                        System.err.format("Invalid syntax line = %s",lineNum);
+                        System.err.format("Invalid syntax line = %s\n",lineNum);
                     }
                 }
                 else {
-                    System.err.format("Invalid syntax line = %s",lineNum);
+                    System.err.format("Invalid syntax line = %s\n",lineNum);
                 }
             }
             lineNum++;
@@ -126,14 +129,19 @@ public class Scan {
     }
 
     public static void printList(List<String> tokens){
-        for (String token:tokens){
-            System.out.println(token);
+        for (String token:tokens) {
+            if (token.equals(";")) {
+                System.out.println(token);
+            } else {
+                System.out.print("["+token+"] ");
+            }
         }
+
     }
 
 
     public static void main(String[] args){
-        List<String> a = readFile("C:\\Users\\Jake\\Desktop\\CS CLASSES\\PLC\\PLC unofficial\\src\\program.j");
+        List<String> a = readFile("src/program1.j");
         List<String> tokens=tokenizer(a);
         printList(tokens);
 
