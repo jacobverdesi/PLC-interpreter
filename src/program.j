@@ -8,7 +8,7 @@ print( x + 3 );
 print( y + 0.21 );
 print( z );
 print( concat( a, "456" ) );
-print( concat( "123", concat( "456", "789" ) ) );
-print( charAt( "foobar", 4 ) );
+print( concat( "123", concat( "4 56", "789" ) ) );
+print( charAt( "foobar",4 ) );
 print( charAt( "foobar", x - 2 ) );
-print( charAt( concat( "foo", "bar" ), 4 ) )
+print( charAt( concat( "foo", "bar" ), 4 ) );
