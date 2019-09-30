@@ -31,9 +31,7 @@ public class Scan {
             return null;
         }
     }
-    private static void resetState(StringBuilder token,List<String> tokens,int state){
 
-    }
     private static List<String> dfaTokenizer(List<String> lines){
         int lineNum=0;
         DFAstate state=new DFAstate();
@@ -45,7 +43,7 @@ public class Scan {
                 if(i<chars.length-1) state.setNext(chars[i + 1]);
                 char curr=state.getCurr();
                 char next=state.getNext();
-                System.out.println("i: "+i+" current: "+state.getCurr()+" next: "+state.getNext()+ " state: "+state.getState());
+                //System.out.println("i: "+i+" current: "+state.getCurr()+" next: "+state.getNext()+ " state: "+state.getState());
                 switch (state.getState()){
                     case 0:
                         if (Character.isLetter(curr)){
@@ -118,29 +116,6 @@ public class Scan {
             lineNum++;
         }
         return state.getTokens();
-    }
-
-
-    /**
-     * Tokenizer goes through each line and splits at the Delimiters
-     * Then it splits at the strings
-     * Remove empty tokens
-     * //TODO: concatnate quote tokens together
-     * @param lines
-     * @return
-     */
-    private static List<String> tokenizer(List<String> lines){
-        List<String> tokens = new ArrayList<String>();
-        int lineNum=0;
-        for (String line:lines){
-            String[] tok=line.split(String.format(DELIMITER,"[()+\\-\\*/^=,;]"));
-            for (String to:tok) {
-                String[] tok2=to.split("\\s");
-                tokens.addAll(Arrays.asList(tok2));
-            }
-        }
-        tokens.removeIf(String::isEmpty);
-        return tokens;
     }
 
     /**
