@@ -31,6 +31,10 @@ public class Scan {
             return null;
         }
     }
+    private static void error(int line , int column,char curr){
+        System.err.format("Invalid syntax line: %s column: %s character: %s\n", line, column,curr);
+        System.exit(0);
+    }
 
     private static List<String> dfaTokenizer(List<String> lines){
         int lineNum=0;
@@ -38,7 +42,12 @@ public class Scan {
         for(String line: lines){
             char[] chars=line.toCharArray();
             for (int i=0; i < chars.length;i++){
+                if(chars[i]=='/' && chars[i+1]=='/'){
+                    break;
+                }
                 if(state.getState()==0 && (chars[i]==' '|| chars[i]=='\n' || chars[i]=='\t')) continue;
+                //System.out.println("i: "+i+" current: "+state.getCurr()+" next: "+state.getNext()+ " state: "+state.getState());
+
                 state.setCurr(chars[i]);
                 if(i<chars.length-1) state.setNext(chars[i + 1]);
                 char curr=state.getCurr();
@@ -55,11 +64,9 @@ public class Scan {
                             state.setState(3);
                             if(next!='.' && !Character.isDigit(next)) state.reset();
                         }
-                        else if ("=();+-*/^,".contains(""+curr)) state.reset();
+                        else if ("=();+-*^,".contains(""+curr)) state.reset();
                         else if (curr == '\"') state.setState(14);
-                        else {
-                            System.err.format("Invalid syntax line = %s column %s \n", lineNum, i);
-                        }
+                        else error(lineNum,i,curr);
 
                         break;
                     case 1:
@@ -69,16 +76,14 @@ public class Scan {
                             }
                             continue;
                         }
-                        else {
-                            System.err.format("Invalid syntax line = %s column %s \n", lineNum, i);
-                        }
+                        else error(lineNum,i,curr);
+
                     case 2:
                         if(Character.isDigit(curr)){
                             state.setState(4);
                         }
-                        else {
-                            System.err.format("Invalid syntax line = %s column %s \n", lineNum, i);
-                        }
+                        else error(lineNum,i,curr);
+
                         break;
                     case 3:
                         if(Character.isDigit(curr)){
@@ -91,25 +96,19 @@ public class Scan {
                                 state.reset();
                             }
                         }
-                        else {
-                            System.err.format("Invalid syntax line = %s column %s \n", lineNum, i);
-                        }
+                        else error(lineNum,i,curr);
                         break;
                     case 4:
                         if(Character.isDigit(curr)){
                             if(!Character.isDigit(next))state.reset();
                             continue;
                         }
-                        else {
-                            System.err.format("Invalid syntax line = %s column %s \n", lineNum, i);
-                        }
+                        else error(lineNum,i,curr);
                         break;
                     case 14:
                         if(Character.isDigit(curr) || Character.isLetter(curr) || curr== ' ') continue;
                         else if (curr=='\"') state.reset();
-                        else {
-                            System.err.format("Invalid syntax line = %s column %s \n", lineNum, i);
-                        }
+                        else error(lineNum,i,curr);
                         break;
                 }
             }
@@ -133,7 +132,7 @@ public class Scan {
     }
 
     public static void main(String[] args){
-        List<String> a = readFile("src/program.j");
+        List<String> a = readFile("src/program1.j");
         List<String> tokens=dfaTokenizer(a);
         printList(tokens);
     }
