@@ -31,6 +31,95 @@ public class Scan {
             return null;
         }
     }
+    private static void resetState(StringBuilder token,List<String> tokens,int state){
+
+    }
+    private static List<String> dfaTokenizer(List<String> lines){
+        int lineNum=0;
+        DFAstate state=new DFAstate();
+        for(String line: lines){
+            char[] chars=line.toCharArray();
+            for (int i=0; i < chars.length;i++){
+                if(state.getState()==0 && (chars[i]==' '|| chars[i]=='\n' || chars[i]=='\t')) continue;
+                state.setCurr(chars[i]);
+                if(i<chars.length-1) state.setNext(chars[i + 1]);
+                char curr=state.getCurr();
+                char next=state.getNext();
+                System.out.println("i: "+i+" current: "+state.getCurr()+" next: "+state.getNext()+ " state: "+state.getState());
+                switch (state.getState()){
+                    case 0:
+                        if (Character.isLetter(curr)){
+                            state.setState(1);
+                            if(!Character.isLetter(next) && !Character.isDigit(next)) state.reset();
+                        }
+                        else if (curr == '.') state.setState(2);
+                        else if (Character.isDigit(curr)){
+                            state.setState(3);
+                            if(next!='.' && !Character.isDigit(next)) state.reset();
+                        }
+                        else if ("=();+-*/^,".contains(""+curr)) state.reset();
+                        else if (curr == '\"') state.setState(14);
+                        else {
+                            System.err.format("Invalid syntax line = %s column %s \n", lineNum, i);
+                        }
+
+                        break;
+                    case 1:
+                        if (Character.isLetter(curr) || Character.isDigit(curr)){
+                            if(!Character.isLetter(next) && !Character.isDigit(next)){
+                                state.reset();
+                            }
+                            continue;
+                        }
+                        else {
+                            System.err.format("Invalid syntax line = %s column %s \n", lineNum, i);
+                        }
+                    case 2:
+                        if(Character.isDigit(curr)){
+                            state.setState(4);
+                        }
+                        else {
+                            System.err.format("Invalid syntax line = %s column %s \n", lineNum, i);
+                        }
+                        break;
+                    case 3:
+                        if(Character.isDigit(curr)){
+                            if(next!='.' && !Character.isDigit(next)) state.reset();
+                            continue;
+                        }
+                        else if (curr=='.'){
+                            state.setState(4);
+                            if(!Character.isDigit(next)){
+                                state.reset();
+                            }
+                        }
+                        else {
+                            System.err.format("Invalid syntax line = %s column %s \n", lineNum, i);
+                        }
+                        break;
+                    case 4:
+                        if(Character.isDigit(curr)){
+                            if(!Character.isDigit(next))state.reset();
+                            continue;
+                        }
+                        else {
+                            System.err.format("Invalid syntax line = %s column %s \n", lineNum, i);
+                        }
+                        break;
+                    case 14:
+                        if(Character.isDigit(curr) || Character.isLetter(curr) || curr== ' ') continue;
+                        else if (curr=='\"') state.reset();
+                        else {
+                            System.err.format("Invalid syntax line = %s column %s \n", lineNum, i);
+                        }
+                        break;
+                }
+            }
+            lineNum++;
+        }
+        return state.getTokens();
+    }
+
 
     /**
      * Tokenizer goes through each line and splits at the Delimiters
@@ -43,13 +132,6 @@ public class Scan {
     private static List<String> tokenizer(List<String> lines){
         List<String> tokens = new ArrayList<String>();
         int lineNum=0;
-
-//        for (String line2: lines){
-//            String[] tok2= line2.split("\\s\"");
-//            printList(List.of(tok2));
-//        }
-//
-//        System.out.println();
         for (String line:lines){
             String[] tok=line.split(String.format(DELIMITER,"[()+\\-\\*/^=,;]"));
             for (String to:tok) {
@@ -58,24 +140,6 @@ public class Scan {
             }
         }
         tokens.removeIf(String::isEmpty);
-//        for (int i = 0; i < tokens.size(); i++) {
-//            String token=tokens.get(i);
-//            System.out.println("token: "+token);
-//            if(token.charAt(0)=='"' && token.charAt(token.length()-1)!='"'){
-//                for (int j = 0; j < tokens.subList(i,tokens.size()-1).size(); j++) {
-//                    List<String> tokens2 = new ArrayList<String>();
-//                    String token2=tokens.get(i+j);
-//                    System.out.println("token2: "+token2);
-//                    tokens2.add(token2);
-//                    tokens.remove(token2);
-//                    System.out.println();
-//                    if(token2.charAt(token2.length()-1)=='"'){
-//                        tokens.addAll(i,tokens2);
-//                        break;
-//                    }
-//                }
-//            }
-//        }
         return tokens;
     }
 
@@ -94,9 +158,8 @@ public class Scan {
     }
 
     public static void main(String[] args){
-        List<String> a = readFile("src/program1.j");
-        List<String> tokens=tokenizer(a);
+        List<String> a = readFile("src/program.j");
+        List<String> tokens=dfaTokenizer(a);
         printList(tokens);
-
     }
 }
