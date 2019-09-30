@@ -36,7 +36,8 @@ public class Scan {
         System.exit(0);
     }
 
-    private static List<String> dfaTokenizer(List<String> lines){
+    private static List<List> dfaTokenizer(List<String> lines){
+        List<List> tokens= new ArrayList<>();
         int lineNum=0;
         DFAstate state=new DFAstate();
         for(String line: lines){
@@ -103,27 +104,30 @@ public class Scan {
                 }
             }
             lineNum++;
+            List<String> a= new ArrayList<>(state.getTokens());
+            tokens.add(a);
+            state.resetTokens();
         }
-        return state.getTokens();
+        return tokens;
     }
 
     /**
      * A pretty print to see the tokens
      * @param tokens
      */
-    private static void printList(List<String> tokens){
-        for (String token:tokens) {
-            if (token.equals(";")) {
-                System.out.println("["+token+"]");
-            } else {
-                System.out.print("["+token+"] ");
+    private static void printList(List<List> tokens){
+        for (List line: tokens) {
+            for (Object token : line) {
+                    System.out.print("[" + token + "] ");
             }
+            System.out.println();
         }
     }
 
     public static void main(String[] args){
-        List<String> a = readFile("src/program1.j");
-        List<String> tokens=dfaTokenizer(a);
+        List<String> a = readFile("src/program.j");
+        List<List> tokens=dfaTokenizer(a);
+        //System.out.println(tokens);
         printList(tokens);
     }
 }

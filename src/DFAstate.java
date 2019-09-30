@@ -1,43 +1,40 @@
 import java.util.ArrayList;
 import java.util.List;
 
-public class DFAstate {
+class DFAstate {
     private int state;
     private StringBuilder token;
     private char curr;
     private char next;
     private List<String> tokens = new ArrayList<String>();
 
-    public DFAstate (){
+    DFAstate(){
         state=0;
         token= new StringBuilder();
         curr=' ';
         next=' ';
     }
-    public void addChar(char c){
-        token.append(c);
-    }
-    public int getState() {
+    int getState() {
         return state;
     }
-    public void setState(int state) {
+    void setState(int state) {
         this.state = state;
     }
-    public char getCurr() {
+    char getCurr() {
         return curr;
     }
-    public void setCurr(char curr) {
+    void setCurr(char curr) {
         this.curr = curr;
         token.append(curr);
     }
-    public char getNext() {
+    char getNext() {
         return next;
     }
-    public void setNext(char next) {
+    void setNext(char next) {
         this.next = next;
     }
 
-    public void reset(){
+    void reset(){
         //System.out.println("Adding token: "+token);
         tokens.add(token.toString());
         token.delete(0,token.length());
@@ -48,5 +45,8 @@ public class DFAstate {
 
     public List<String> getTokens() {
         return tokens;
+    }
+    void resetTokens(){
+        tokens.clear();
     }
 }
