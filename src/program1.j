@@ -5,9 +5,9 @@ print( x );
 print( x);
 print (x);
 //test comment
-print //test (5)
+print; //test (5)
 pri//nt
-
+//
 print (x) ;
 String hello = "Hello";String world = " World";
 String hello = "Hello"; String world = " World";

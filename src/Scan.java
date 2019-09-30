@@ -42,11 +42,8 @@ public class Scan {
         for(String line: lines){
             char[] chars=line.toCharArray();
             for (int i=0; i < chars.length;i++){
-                if(chars[i]=='/' && chars[i+1]=='/'){
-                    break;
-                }
+                if(chars[i]=='/' && chars[i+1]=='/') break; // if find comment end line
                 if(state.getState()==0 && (chars[i]==' '|| chars[i]=='\n' || chars[i]=='\t')) continue;
-                //System.out.println("i: "+i+" current: "+state.getCurr()+" next: "+state.getNext()+ " state: "+state.getState());
 
                 state.setCurr(chars[i]);
                 if(i<chars.length-1) state.setNext(chars[i + 1]);
@@ -71,19 +68,14 @@ public class Scan {
                         break;
                     case 1:
                         if (Character.isLetter(curr) || Character.isDigit(curr)){
-                            if(!Character.isLetter(next) && !Character.isDigit(next)){
-                                state.reset();
-                            }
+                            if(!Character.isLetter(next) && !Character.isDigit(next)) state.reset();
                             continue;
                         }
                         else error(lineNum,i,curr);
 
                     case 2:
-                        if(Character.isDigit(curr)){
-                            state.setState(4);
-                        }
+                        if(Character.isDigit(curr)) state.setState(4);
                         else error(lineNum,i,curr);
-
                         break;
                     case 3:
                         if(Character.isDigit(curr)){
@@ -92,9 +84,7 @@ public class Scan {
                         }
                         else if (curr=='.'){
                             state.setState(4);
-                            if(!Character.isDigit(next)){
-                                state.reset();
-                            }
+                            if(!Character.isDigit(next))state.reset();
                         }
                         else error(lineNum,i,curr);
                         break;
