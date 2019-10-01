@@ -36,8 +36,8 @@ public class Scan {
         System.exit(0);
     }
 
-    private static List<List> dfaTokenizer(List<String> lines){
-        List<List> tokens= new ArrayList<>();
+    private static List<List<Map.Entry<String,Tokens>>> dfaTokenizer(List<String> lines){
+        List<List<Map.Entry<String,Tokens>>> tokens= new ArrayList<>();
         int lineNum=0;
         DFAstate state=new DFAstate();
         for(String line: lines){
@@ -124,30 +124,21 @@ public class Scan {
         }
         return tokens;
     }
-    private static List<List> getPrimitives (List<List> tokens){
-        List<List> prim=new ArrayList<>(new ArrayList<>());
-        for (List line: tokens){
-            List<String> primLine=new ArrayList<>();
-            for (Object token: line){
-                if(token.equals("print")) primLine.add("<print>");
-                else if (token.equals("(")) primLine.add("<left_paren>");
-                else if (token.equals(")")) primLine.add("<right_paren>");
-                else if ((token.toString().contains("."))) primLine.add("<dbl>");
-
-            }
-            prim.add(primLine);
-        }
-        return prim;
-    }
-
     /**
      * A pretty print to see the tokens
      * @param tokens
      */
-    private static void printList(List<List> tokens){
-        for (List line: tokens) {
-            for (Object token : line) {
-                    System.out.print("[" + token + "] ");
+
+    private static void printList(List<List<Map.Entry<String,Tokens>>> tokens){
+        for (List<Map.Entry<String,Tokens>> line: tokens) {
+            for (Map.Entry<String,Tokens> token: line) {
+                    System.out.print("[" + token.getKey() + "] ");
+            }
+            System.out.println();
+        }
+        for (List<Map.Entry<String,Tokens>> line: tokens) {
+            for (Map.Entry<String,Tokens> token: line) {
+                System.out.print("[" + token.getValue() + "] ");
             }
             System.out.println();
         }
@@ -155,11 +146,8 @@ public class Scan {
 
     public static void main(String[] args){
         List<String> a = readFile("src/program.j");
-        List<List> tokens=dfaTokenizer(a);
+        List<List<Map.Entry<String,Tokens>>> tokens=dfaTokenizer(a);
         //System.out.println(tokens);
         printList(tokens);
-
-
-
     }
 }
