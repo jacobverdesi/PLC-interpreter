@@ -1,12 +1,14 @@
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 class DFAstate {
     private int state;
     private StringBuilder token;
     private char curr;
     private char next;
-    private List<String> tokens = new ArrayList<String>();
+    private List<Map.Entry<String,Tokens>> tokens= new ArrayList<>();
 
     DFAstate(){
         state=0;
@@ -33,17 +35,21 @@ class DFAstate {
     void setNext(char next) {
         this.next = next;
     }
+    String getToken(){
+        return token.toString();
+    }
 
-    void reset(){
+    void reset(Tokens key){
         //System.out.println("Adding token: "+token);
-        tokens.add(token.toString());
+        Map.Entry<String,Tokens> tokensMap =new AbstractMap.SimpleEntry<String,Tokens>(token.toString(),key) ;
+        tokens.add(tokensMap);
         token.delete(0,token.length());
         curr=' ';
         next=' ';
         state=0;
     }
 
-    public List<String> getTokens() {
+    public List<Map.Entry<String,Tokens>> getTokens() {
         return tokens;
     }
     void resetTokens(){

@@ -55,21 +55,35 @@ public class Scan {
                     case 0:
                         if (Character.isLetter(curr)){
                             state.setState(1);
-                            if(!Character.isLetter(next) && !Character.isDigit(next)) state.reset();
+                            if(!Character.isLetter(next) && !Character.isDigit(next)) state.reset(Tokens.ID);
                         }
                         else if (curr == '.') state.setState(2);
                         else if (Character.isDigit(curr)){
                             state.setState(3);
-                            if(next!='.' && !Character.isDigit(next)) state.reset();
+                            if(next!='.' && !Character.isDigit(next)) state.reset(Tokens.INT);
                         }
-                        else if ("=();+-*^,".contains(""+curr)) state.reset();
+                        else if (curr == '=') state.reset(Tokens.ASSIGN);
+                        else if (curr == '(') state.reset(Tokens.START_PAREN);
+                        else if (curr == ')') state.reset(Tokens.END_PAREN);
+                        else if (curr == ';') state.reset(Tokens.END_STMT);
+                        else if (curr == '+') state.reset(Tokens.PLUS);
+                        else if (curr == '-') state.reset(Tokens.MINUS);
+                        else if (curr == '*') state.reset(Tokens.MULTI);
+                        else if (curr == '/') state.reset(Tokens.DIVIDE);
+                        else if (curr == ',') state.reset(Tokens.COMMA);
+                        else if (curr == '^') state.reset(Tokens.POWER);
                         else if (curr == '\"') state.setState(14);
                         else error(lineNum,i,curr);
 
                         break;
                     case 1:
                         if (Character.isLetter(curr) || Character.isDigit(curr)){
-                            if(!Character.isLetter(next) && !Character.isDigit(next)) state.reset();
+                            if(!Character.isLetter(next) && !Character.isDigit(next)){
+                                if (state.getToken().equals("print")) state.reset(Tokens.PRINT);
+                                else if (state.getToken().equals("concat")) state.reset(Tokens.CONCAT);
+                                else if (state.getToken().equals("charAt")) state.reset(Tokens.CHARAT);
+                                else state.reset(Tokens.ID);
+                            }
                             continue;
                         }
                         else error(lineNum,i,curr);
@@ -80,35 +94,50 @@ public class Scan {
                         break;
                     case 3:
                         if(Character.isDigit(curr)){
-                            if(next!='.' && !Character.isDigit(next)) state.reset();
+                            if(next!='.' && !Character.isDigit(next)) state.reset(Tokens.INT);
                             continue;
                         }
                         else if (curr=='.'){
                             state.setState(4);
-                            if(!Character.isDigit(next))state.reset();
+                            if(!Character.isDigit(next))state.reset(Tokens.DOUBLE);
                         }
                         else error(lineNum,i,curr);
                         break;
                     case 4:
                         if(Character.isDigit(curr)){
-                            if(!Character.isDigit(next))state.reset();
+                            if(!Character.isDigit(next))state.reset(Tokens.DOUBLE);
                             continue;
                         }
                         else error(lineNum,i,curr);
                         break;
                     case 14:
                         if(Character.isDigit(curr) || Character.isLetter(curr) || curr== ' ') continue;
-                        else if (curr=='\"') state.reset();
+                        else if (curr=='\"') state.reset(Tokens.STRING);
                         else error(lineNum,i,curr);
                         break;
                 }
             }
             lineNum++;
-            List<String> a= new ArrayList<>(state.getTokens());
+            List<Map.Entry<String,Tokens>> a= new ArrayList<>(state.getTokens());
             tokens.add(a);
             state.resetTokens();
         }
         return tokens;
+    }
+    private static List<List> getPrimitives (List<List> tokens){
+        List<List> prim=new ArrayList<>(new ArrayList<>());
+        for (List line: tokens){
+            List<String> primLine=new ArrayList<>();
+            for (Object token: line){
+                if(token.equals("print")) primLine.add("<print>");
+                else if (token.equals("(")) primLine.add("<left_paren>");
+                else if (token.equals(")")) primLine.add("<right_paren>");
+                else if ((token.toString().contains("."))) primLine.add("<dbl>");
+
+            }
+            prim.add(primLine);
+        }
+        return prim;
     }
 
     /**
@@ -129,5 +158,8 @@ public class Scan {
         List<List> tokens=dfaTokenizer(a);
         //System.out.println(tokens);
         printList(tokens);
+
+
+
     }
 }
