@@ -8,7 +8,6 @@ import java.io.*;
 import java.util.*;
 
 public class Scan {
-    static private final String DELIMITER = "((?<=%1$s)|(?=%1$s))";
     /**
      * Takes in file name reads line by line
      * @param filename
@@ -31,11 +30,35 @@ public class Scan {
             return null;
         }
     }
-    private static void error(int line , int column,char curr){
+
+    /**
+     * Called when current state has no where to go
+     * Prints line and column and unexpected character
+     * exits program after
+     */
+    private static void tokenError(int line , int column, char curr){
         System.err.format("Invalid syntax line: %s column: %s character: %s\n", line, column,curr);
         System.exit(0);
     }
 
+    /**
+     * Function that reads list of lines and tokenizes line using a DFA
+     * tokens is a 2d list representing the lines and all the tokens in the line
+     * this tokens list has a map inside which stores a String being the token and a TERMINAL enum which is the type
+     * DFAstate is a class that is used to represent the current state of the dfa and other data
+     * Iterate through list of lines then through each character of the line
+     * The start state is 0
+     * DFA process:
+     * read new character and the next one update dfa
+     * read current state goto that case
+     * each case looks for specific current and next characters
+     * if current is equivilent set new state ,
+     * then checks if next is expected if not reset dfa and add the token to line of tokens
+     * when reseting determine type of token and to value of the token key
+     * if current is not found error out
+     * @param lines
+     * @return
+     */
     private static List<List<Map.Entry<String, TERMINAL>>> dfaTokenizer(List<String> lines){
         List<List<Map.Entry<String, TERMINAL>>> tokens= new ArrayList<>();
         int lineNum=0;
@@ -43,15 +66,14 @@ public class Scan {
         for(String line: lines){
             char[] chars=line.toCharArray();
             for (int i=0; i < chars.length;i++){
-                if(chars[i]=='/' && chars[i+1]=='/') break; // if find comment end line
-                if(state.getState()==0 && (chars[i]==' '|| chars[i]=='\n' || chars[i]=='\t')) continue;
-
-                state.setCurr(chars[i]);
-                if(i<chars.length-1) state.setNext(chars[i + 1]);
-                char curr=state.getCurr();
-                char next=state.getNext();
+                if(chars[i]=='/' && chars[i+1]=='/') break; // skip rest of line if  finds a comment
+                if(state.getState()==0 && (chars[i]==' '|| chars[i]=='\n' || chars[i]=='\t')) continue; //ignore these chars
+                state.setCurr(chars[i]); // set the dfa current character
+                if(i<chars.length-1) state.setNext(chars[i + 1]); // set the dfa's next character if in range
+                char curr=state.getCurr(); // get curr character ....yes redundant
+                char next=state.getNext(); // get next character ....yes redundant
                 //System.out.println("i: "+i+" current: "+state.getCurr()+" next: "+state.getNext()+ " state: "+state.getState());
-                switch (state.getState()){
+                switch (state.getState()){ // get the state and do something with it
                     case 0:
                         if (Character.isLetter(curr)){
                             state.setState(1);
@@ -73,7 +95,7 @@ public class Scan {
                         else if (curr == ',') state.reset(TERMINAL.COMMA);
                         else if (curr == '^') state.reset(TERMINAL.POWER);
                         else if (curr == '\"') state.setState(14);
-                        else error(lineNum,i,curr);
+                        else tokenError(lineNum,i,curr);
 
                         break;
                     case 1:
@@ -89,11 +111,11 @@ public class Scan {
                             }
                             continue;
                         }
-                        else error(lineNum,i,curr);
+                        else tokenError(lineNum,i,curr);
 
                     case 2:
                         if(Character.isDigit(curr)) state.setState(4);
-                        else error(lineNum,i,curr);
+                        else tokenError(lineNum,i,curr);
                         break;
                     case 3:
                         if(Character.isDigit(curr)){
@@ -104,19 +126,19 @@ public class Scan {
                             state.setState(4);
                             if(!Character.isDigit(next))state.reset(TERMINAL.DOUBLE);
                         }
-                        else error(lineNum,i,curr);
+                        else tokenError(lineNum,i,curr);
                         break;
                     case 4:
                         if(Character.isDigit(curr)){
                             if(!Character.isDigit(next))state.reset(TERMINAL.DOUBLE);
                             continue;
                         }
-                        else error(lineNum,i,curr);
+                        else tokenError(lineNum,i,curr);
                         break;
                     case 14:
                         if(Character.isDigit(curr) || Character.isLetter(curr) || curr== ' ') continue;
                         else if (curr=='\"') state.reset(TERMINAL.STRING);
-                        else error(lineNum,i,curr);
+                        else tokenError(lineNum,i,curr);
                         break;
                 }
             }
@@ -144,7 +166,7 @@ public class Scan {
         System.out.println("Terminals\n");
         for (List<Map.Entry<String, TERMINAL>> line: tokens) {
             for (Map.Entry<String, TERMINAL> token: line) {
-                System.out.print("" + token.getValue() + " ");
+                System.out.print("[" + token.getValue() + "] ");
             }
             System.out.println();
         }
