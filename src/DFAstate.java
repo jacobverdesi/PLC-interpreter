@@ -8,7 +8,7 @@ class DFAstate {
     private StringBuilder token;
     private char curr;
     private char next;
-    private List<Map.Entry<String,Tokens>> tokens= new ArrayList<>();
+    private List<Map.Entry<String, TERMINAL>> tokens= new ArrayList<>();
 
     DFAstate(){
         state=0;
@@ -39,9 +39,9 @@ class DFAstate {
         return token.toString();
     }
 
-    void reset(Tokens key){
+    void reset(TERMINAL key){
         //System.out.println("Adding token: "+token);
-        Map.Entry<String,Tokens> tokensMap =new AbstractMap.SimpleEntry<String,Tokens>(token.toString(),key) ;
+        Map.Entry<String, TERMINAL> tokensMap =new AbstractMap.SimpleEntry<>(token.toString(),key) ;
         tokens.add(tokensMap);
         token.delete(0,token.length());
         curr=' ';
@@ -49,7 +49,7 @@ class DFAstate {
         state=0;
     }
 
-    public List<Map.Entry<String,Tokens>> getTokens() {
+    public List<Map.Entry<String, TERMINAL>> getTokens() {
         return tokens;
     }
     void resetTokens(){
