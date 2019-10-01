@@ -56,6 +56,7 @@ public class Scan {
      * then checks if next is expected if not reset dfa and add the token to line of tokens
      * when reseting determine type of token and to value of the token key
      * if current is not found error out
+     *
      * @param lines
      * @return
      */
