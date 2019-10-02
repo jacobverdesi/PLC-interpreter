@@ -171,10 +171,35 @@ public class Scan {
             System.out.println();
         }
     }
+    public static void printTable (List<List<String>> matrix){
+        for(List line: matrix){
+            for(Object state:line){
+                System.out.printf("[%15s] ",  state);
+            }
+            System.out.println();
+        }
+    }
+    public static List<List<String>> parseTable(List<String> lines){
+        List<List<String>> matrix = new ArrayList<>();
+        List<String> prim= Arrays.asList(lines.get(0).strip().split("\t"));
+        for(int i=0;i<lines.size();i++){
+
+            String line=lines.get(i).strip();
+            List<String> states=new ArrayList<String>(Collections.nCopies(lines.get(0).length(), ""));
+            states.addAll(0,Arrays.asList(line.split("\t")));
+            matrix.add(states);
+
+        }
+        printTable(matrix);
+        return matrix;
+    }
 
     public static void main(String[] args){
-        List<String> a = readFile("src/program.j");
-        List<List<Map.Entry<String, TERMINAL>>> tokens=dfaTokenizer(a);
+        List<String> prog = readFile("src/program.j");
+        List<String> table = readFile("src/LALR(1) parse table");
+        List<List<String>> matrix = parseTable(table);
+
+        List<List<Map.Entry<String, TERMINAL>>> tokens=dfaTokenizer(prog);
         //System.out.println(tokens);
         printList(tokens);
     }
