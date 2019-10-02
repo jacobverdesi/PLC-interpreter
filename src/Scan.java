@@ -182,10 +182,11 @@ public class Scan {
     public static List<List<String>> parseTable(List<String> lines){
         List<List<String>> matrix = new ArrayList<>();
         List<String> prim= Arrays.asList(lines.get(0).strip().split("\t"));
-        for(int i=0;i<lines.size();i++){
+        printTable(new ArrayList<>(Collections.singleton(prim)));
+        for(int i=1;i<lines.size();i++){
 
             String line=lines.get(i).strip();
-            List<String> states=new ArrayList<String>(Collections.nCopies(lines.get(0).length(), ""));
+            List<String> states=new ArrayList<String>(Collections.nCopies(prim.size(), ""));
             states.addAll(0,Arrays.asList(line.split("\t")));
             matrix.add(states);
 
