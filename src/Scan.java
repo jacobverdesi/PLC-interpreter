@@ -174,7 +174,7 @@ public class Scan {
     public static void printTable (List<List<String>> matrix){
         for(List line: matrix){
             for(Object state:line){
-                System.out.printf("[%15s] ",  state);
+                System.out.printf("[%10s] ",  state);
             }
             System.out.println();
         }
@@ -184,15 +184,27 @@ public class Scan {
         List<String> prim= Arrays.asList(lines.get(0).strip().split("\t"));
         printTable(new ArrayList<>(Collections.singleton(prim)));
         for(int i=1;i<lines.size();i++){
-
             String line=lines.get(i).strip();
             List<String> states=new ArrayList<String>(Collections.nCopies(prim.size(), ""));
-            states.addAll(0,Arrays.asList(line.split("\t")));
+            List<String>temp=Arrays.asList(line.split("\t"));
+            for(String state:temp){
+                states.set(temp.indexOf(state),state);
+            }
             matrix.add(states);
-
         }
         printTable(matrix);
         return matrix;
+    }
+
+    public static Boolean parseTree(List<List<String>> parseTable, List<List<Map.Entry<String, TERMINAL>>> tokens){
+        
+        for (List<Map.Entry<String, TERMINAL>> line: tokens) {
+            for (Map.Entry<String, TERMINAL> token: line) {
+                System.out.print("[" + token.getValue() + "] ");
+            }
+            System.out.println();
+        }
+        return true;
     }
 
     public static void main(String[] args){
