@@ -154,19 +154,21 @@ public class Scan {
      * @param tokens
      */
 
-    private static void printList(List<List<Map.Entry<String, TERMINAL>>> tokens){
+    private static void printTokens(List<List<Map.Entry<String, TERMINAL>>> tokens) {
         System.out.println("Tokens\n");
 
-        for (List<Map.Entry<String, TERMINAL>> line: tokens) {
-            for (Map.Entry<String, TERMINAL> token: line) {
-                    System.out.print("[" + token.getKey() + "] ");
+        for (List<Map.Entry<String, TERMINAL>> line : tokens) {
+            for (Map.Entry<String, TERMINAL> token : line) {
+                System.out.print("[" + token.getKey() + "] ");
             }
             System.out.println();
         }
+    }
+    private static void printTerminals(List<List<Map.Entry<String, TERMINAL>>> tokens) {
         System.out.println("Terminals\n");
         for (List<Map.Entry<String, TERMINAL>> line: tokens) {
             for (Map.Entry<String, TERMINAL> token: line) {
-                System.out.print("[" + token.getValue() + "] ");
+                System.out.print("" + token.getValue() + " ");
             }
             System.out.println();
         }
@@ -183,7 +185,7 @@ public class Scan {
     public static List<List<String>> parseTable(List<String> lines){
         List<List<String>> matrix = new ArrayList<>();
         List<String> prim= Arrays.asList(lines.get(0).strip().split("\t"));
-        printTable(new ArrayList<>(Collections.singleton(prim)));
+        matrix.add(prim);
         for(int i=1;i<lines.size();i++){
             String line=lines.get(i).strip();
             List<String> states=new ArrayList<String>(Collections.nCopies(prim.size(), ""));
@@ -193,15 +195,36 @@ public class Scan {
             }
             matrix.add(states);
         }
-        printTable(matrix);
         return matrix;
     }
 
-    public static Boolean parseTree(List<List<String>> parseTable, List<List<Map.Entry<String, TERMINAL>>> tokens){
-
+    public static Boolean parseTree(List<String> rules,List<List<String>> parseTable, List<List<Map.Entry<String, TERMINAL>>> tokens){
+        Stack stack=new Stack();
+        List<Integer> output=new ArrayList();
+        stack.push(0);
+        int step=0;
         for (List<Map.Entry<String, TERMINAL>> line: tokens) {
-            for (Map.Entry<String, TERMINAL> token: line) {
-                System.out.print("[" + token.getValue() + "] ");
+            for (Map.Entry<String, TERMINAL> curr: line) {
+                step++;
+                String action = parseTable.get((int)stack.peek()+1).get(parseTable.get(0).indexOf(curr.getValue().toString()));
+                System.out.println(step+" "+ stack+ line.subList(line.indexOf(curr),line.size())+ " "+ action+ " ");
+                if(action.equals("acc")) {
+                    break;
+                }
+                if(action.equals("")){
+                    return false;
+                }
+                else{
+                    char shiftReduce = action.charAt(0);
+                    int state=Integer.parseInt(action.substring(1));
+                    if(shiftReduce=='s'){
+                        stack.push(state);
+                    }
+                    else if (shiftReduce=='r'){
+                        String[] rightSide=rules.get(state).substring(rules.get(state).indexOf("->")+2).split(" ");
+                        System.out.println(Arrays.toString(rightSide));
+                    }
+                }
             }
             System.out.println();
         }
@@ -211,10 +234,15 @@ public class Scan {
     public static void main(String[] args){
         List<String> prog = readFile("src/program.j");
         List<String> table = readFile("src/LALR(1) parse table");
+        List<String> rules = readFile("src/GRAMMAR");
         List<List<String>> matrix = parseTable(table);
 
         List<List<Map.Entry<String, TERMINAL>>> tokens=dfaTokenizer(prog);
         //System.out.println(tokens);
-        printList(tokens);
+        //printTokens(tokens);
+        printTerminals(tokens);
+        //printTable(matrix);
+
+        System.out.println(parseTree(rules,matrix,tokens));
     }
 }
