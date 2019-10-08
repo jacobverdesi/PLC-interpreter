@@ -178,6 +178,7 @@ public class Scan {
             }
             System.out.println();
         }
+
     }
     public static List<List<String>> parseTable(List<String> lines){
         List<List<String>> matrix = new ArrayList<>();
@@ -197,7 +198,7 @@ public class Scan {
     }
 
     public static Boolean parseTree(List<List<String>> parseTable, List<List<Map.Entry<String, TERMINAL>>> tokens){
-        
+
         for (List<Map.Entry<String, TERMINAL>> line: tokens) {
             for (Map.Entry<String, TERMINAL> token: line) {
                 System.out.print("[" + token.getValue() + "] ");
