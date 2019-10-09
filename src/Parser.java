@@ -1,3 +1,4 @@
+import java.time.temporal.Temporal;
 import java.util.*;
 
 public class Parser {
@@ -8,7 +9,6 @@ public class Parser {
             }
             System.out.println();
         }
-
     }
     public static List<List<String>> parseTable(List<String> lines){
         List<List<String>> matrix = new ArrayList<>();
@@ -18,8 +18,8 @@ public class Parser {
             String line=lines.get(i).strip();
             List<String> states=new ArrayList<String>(Collections.nCopies(prim.size(), ""));
             List<String>temp=Arrays.asList(line.split("\t"));
-            for(String state:temp){
-                states.set(temp.indexOf(state),state);
+            for(int j=0;j<temp.size();j++){
+                states.set(j,temp.get(j));
             }
             matrix.add(states);
         }
@@ -27,46 +27,46 @@ public class Parser {
     }
 
     public static Boolean parseTree(List<String> rules,List<List<String>> parseTable, List<List<Map.Entry<String, TERMINAL>>> tokens){
+        List<TERMINAL> tokenList=new ArrayList<>();
+        for (List<Map.Entry<String,TERMINAL>> t:tokens) {
+            for (Map.Entry<String, TERMINAL> m:t) {
+                tokenList.add(m.getValue());
+            }
+        }
+        tokenList.add(TERMINAL.$);
+        System.out.println(tokenList);
         Stack<Integer> stack=new Stack<>();
         List<Integer> output=new ArrayList<>();
-
-
-        for (List<Map.Entry<String, TERMINAL>> line: tokens) {
-            int step=0;
-            stack.clear();
-            stack.push(0);
-            for (int i=0;i<line.size();i++) {
-                Map.Entry<String, TERMINAL> curr= line.get(i);
-                step++;
-                String action = parseTable.get(stack.peek() +1).get(parseTable.get(0).indexOf(curr.getValue().toString()));
-                System.out.println(step+" "+ stack+ line.subList(line.indexOf(curr),line.size())+ " "+ action+ " ");
-                if(action.equals("acc")) {
-                    break;
-                }
-                if(action.equals("")){
-                    return false;
-                }
-                else{
-                    char shiftReduce = action.charAt(0);
-                    int state=Integer.parseInt(action.substring(1));
-                    if(shiftReduce=='s'){
-                        stack.push(state);
-                    }
-                    else if (shiftReduce=='r'){
-                        String[] rightSide=rules.get(state).substring(rules.get(state).indexOf("->")+3).split(" ");
-                        for (String s : rightSide) {
-                            if (!s.equals("\'\'")) stack.pop();
-                        }
-                        String rule=rules.get(state).split(" ")[0];
-                        int newState=Integer.parseInt(parseTable.get(stack.peek()+1).get(parseTable.get(0).indexOf(rule)));
-                        stack.push(newState);
-                        System.out.println(stack);
-                        i--;
-                    }
-                }
+        String action="";
+        int state=0;
+        int tokenIndex=0;
+        int step=0;
+        stack.push(0);
+        while (true){
+            TERMINAL currToken= tokenList.get(tokenIndex);
+            step++;
+            action = parseTable.get(stack.peek() +1).get(parseTable.get(0).indexOf(currToken.toString()));
+            System.out.printf("[%2d] %-60s %-70s [%3s]\n",step,stack,tokenList.subList(tokenIndex,tokenList.size()),action);
+            if(action.equals("acc") || action.equals("")) break;
+            char shiftReduce = action.charAt(0);
+            state=Integer.parseInt(action.substring(1));
+            if(shiftReduce=='s'){
+                stack.push(state);
+                tokenIndex++;
             }
-            System.out.println();
+            else if (shiftReduce=='r'){
+                String[] rightSide=rules.get(state).substring(rules.get(state).indexOf("->")+3).split(" ");
+                for (String s : rightSide) {
+                    if (!s.equals("\'\'")) stack.pop();
+                }
+
+                String rule=rules.get(state).split(" ")[0];
+
+                int newState=Integer.parseInt(parseTable.get(stack.peek()+1).get(parseTable.get(0).indexOf(rule)));
+                stack.push(newState);
+                //System.out.println(stack);
+            }
         }
-        return true;
+        return action.equals("acc");
     }
 }

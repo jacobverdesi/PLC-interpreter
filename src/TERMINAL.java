@@ -4,5 +4,6 @@ public enum TERMINAL {
     ASSIGN,
     DOUBLE,INT, ID,STRING,
     PRINT,CONCAT,CHARAT,
-    I_ASMT,D_ASMT,S_ASMT
+    I_ASMT,D_ASMT,S_ASMT,
+    $
 }
