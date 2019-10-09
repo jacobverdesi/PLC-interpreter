@@ -10,6 +10,11 @@ public class Parser {
             System.out.println();
         }
     }
+    private static void parseError(int line , int column, TERMINAL curr){
+        System.err.format("Invalid syntax line: %s column: %s character: %s\n", line, column,curr);
+        System.exit(0);
+    }
+
     public static List<List<String>> parseTable(List<String> lines){
         List<List<String>> matrix = new ArrayList<>();
         List<String> prim= Arrays.asList(lines.get(0).strip().split("\t"));
@@ -26,7 +31,7 @@ public class Parser {
         return matrix;
     }
 
-    public static Boolean parseTree(List<String> rules,List<List<String>> parseTable, List<List<Map.Entry<String, TERMINAL>>> tokens){
+    public static List<Integer> parseTree(List<String> rules,List<List<String>> parseTable, List<List<Map.Entry<String, TERMINAL>>> tokens){
         List<TERMINAL> tokenList=new ArrayList<>();
         for (List<Map.Entry<String,TERMINAL>> t:tokens) {
             for (Map.Entry<String, TERMINAL> m:t) {
@@ -34,7 +39,6 @@ public class Parser {
             }
         }
         tokenList.add(TERMINAL.$);
-        System.out.println(tokenList);
         Stack<Integer> stack=new Stack<>();
         List<Integer> output=new ArrayList<>();
         String action="";
@@ -46,8 +50,12 @@ public class Parser {
             TERMINAL currToken= tokenList.get(tokenIndex);
             step++;
             action = parseTable.get(stack.peek() +1).get(parseTable.get(0).indexOf(currToken.toString()));
-            System.out.printf("[%2d] %-60s %-70s [%3s]\n",step,stack,tokenList.subList(tokenIndex,tokenList.size()),action);
-            if(action.equals("acc") || action.equals("")) break;
+            //System.out.printf("[%2d] %-60s %-70s [%3s]\n",step,stack,tokenList.subList(tokenIndex,tokenList.size()),action);
+            if(action.equals("acc")) break;
+            if(action.equals("")){
+                parseError(0,0,currToken);
+                return null;
+            }
             char shiftReduce = action.charAt(0);
             state=Integer.parseInt(action.substring(1));
             if(shiftReduce=='s'){
@@ -59,14 +67,13 @@ public class Parser {
                 for (String s : rightSide) {
                     if (!s.equals("\'\'")) stack.pop();
                 }
-
+                output.add(state);
                 String rule=rules.get(state).split(" ")[0];
-
                 int newState=Integer.parseInt(parseTable.get(stack.peek()+1).get(parseTable.get(0).indexOf(rule)));
                 stack.push(newState);
                 //System.out.println(stack);
             }
         }
-        return action.equals("acc");
+        return output;
     }
 }

@@ -11,7 +11,7 @@ public class Main {
         List<List<Map.Entry<String, TERMINAL>>> tokens=Tokenizer.dfaTokenizer(prog);
         //System.out.println(tokens);
         //Tokenizer.printTokens(tokens);
-        Tokenizer.printTerminals(tokens);
+        //Tokenizer.printTerminals(tokens);
         //Tokenizer.printTable(matrix);
 
         System.out.println(Parser.parseTree(rules,matrix,tokens));
