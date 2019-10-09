@@ -147,7 +147,7 @@ public class Tokenizer {
             for (Map.Entry<String, TERMINAL> token: line) {
                 System.out.print("" + token.getValue() + " ");
             }
-            System.out.println();
+            //System.out.println();
         }
     }
 }
