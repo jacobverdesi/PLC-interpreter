@@ -7,29 +7,7 @@
 import java.io.*;
 import java.util.*;
 
-public class Scan {
-    /**
-     * Takes in file name reads line by line
-     * @param filename
-     * @return list of lines
-     */
-    private static List<String> readFile(String filename){
-        List<String> lines = new ArrayList<String>();
-        try{
-            BufferedReader reader = new BufferedReader(new FileReader(filename));
-            String line;
-            while ((line = reader.readLine()) != null){
-                lines.add(line);
-            }
-            reader.close();
-            return lines;
-        }
-        catch (Exception e) {
-            System.err.format("Exception occurred trying to read '%s'.\n", filename);
-            e.printStackTrace();
-            return null;
-        }
-    }
+public class Tokenizer {
 
     /**
      * Called when current state has no where to go
@@ -59,7 +37,7 @@ public class Scan {
      * @param lines
      * @return
      */
-    private static List<List<Map.Entry<String, TERMINAL>>> dfaTokenizer(List<String> lines){
+    public static List<List<Map.Entry<String, TERMINAL>>> dfaTokenizer(List<String> lines){
         List<List<Map.Entry<String, TERMINAL>>> tokens= new ArrayList<>();
         int lineNum=0;
         DFAstate state=new DFAstate();
@@ -153,7 +131,7 @@ public class Scan {
      * @param tokens
      */
 
-    private static void printTokens(List<List<Map.Entry<String, TERMINAL>>> tokens) {
+    public static void printTokens(List<List<Map.Entry<String, TERMINAL>>> tokens) {
         System.out.println("Tokens\n");
 
         for (List<Map.Entry<String, TERMINAL>> line : tokens) {
@@ -163,7 +141,7 @@ public class Scan {
             System.out.println();
         }
     }
-    private static void printTerminals(List<List<Map.Entry<String, TERMINAL>>> tokens) {
+    public static void printTerminals(List<List<Map.Entry<String, TERMINAL>>> tokens) {
         System.out.println("Terminals\n");
         for (List<Map.Entry<String, TERMINAL>> line: tokens) {
             for (Map.Entry<String, TERMINAL> token: line) {
@@ -171,21 +149,5 @@ public class Scan {
             }
             System.out.println();
         }
-    }
-
-
-    public static void main(String[] args){
-        List<String> prog = readFile("src/program.j");
-        List<String> table = readFile("src/LALR(1) parse table");
-        List<String> rules = readFile("src/GRAMMAR");
-        List<List<String>> matrix = Parser.parseTable(table);
-
-        List<List<Map.Entry<String, TERMINAL>>> tokens=dfaTokenizer(prog);
-        //System.out.println(tokens);
-        //printTokens(tokens);
-        printTerminals(tokens);
-        //printTable(matrix);
-
-        System.out.println(Parser.parseTree(rules,matrix,tokens));
     }
 }
