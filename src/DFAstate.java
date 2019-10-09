@@ -49,9 +49,7 @@ class DFAstate {
         state=0;
     }
 
-    public List<Map.Entry<String, TERMINAL>> getTokens() {
-        return tokens;
-    }
+    List<Map.Entry<String, TERMINAL>> getTokens() { return tokens; }
     void resetTokens(){
         tokens.clear();
     }

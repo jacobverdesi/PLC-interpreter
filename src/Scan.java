@@ -96,7 +96,6 @@ public class Scan {
                         else if (curr == '^') state.reset(TERMINAL.POWER);
                         else if (curr == '\"') state.setState(14);
                         else tokenError(lineNum,i,curr);
-
                         break;
                     case 1:
                         if (Character.isLetter(curr) || Character.isDigit(curr)){
@@ -112,7 +111,7 @@ public class Scan {
                             continue;
                         }
                         else tokenError(lineNum,i,curr);
-
+                        break;
                     case 2:
                         if(Character.isDigit(curr)) state.setState(4);
                         else tokenError(lineNum,i,curr);
@@ -173,69 +172,13 @@ public class Scan {
             System.out.println();
         }
     }
-    public static void printTable (List<List<String>> matrix){
-        for(List line: matrix){
-            for(Object state:line){
-                System.out.printf("[%10s] ",  state);
-            }
-            System.out.println();
-        }
 
-    }
-    public static List<List<String>> parseTable(List<String> lines){
-        List<List<String>> matrix = new ArrayList<>();
-        List<String> prim= Arrays.asList(lines.get(0).strip().split("\t"));
-        matrix.add(prim);
-        for(int i=1;i<lines.size();i++){
-            String line=lines.get(i).strip();
-            List<String> states=new ArrayList<String>(Collections.nCopies(prim.size(), ""));
-            List<String>temp=Arrays.asList(line.split("\t"));
-            for(String state:temp){
-                states.set(temp.indexOf(state),state);
-            }
-            matrix.add(states);
-        }
-        return matrix;
-    }
-
-    public static Boolean parseTree(List<String> rules,List<List<String>> parseTable, List<List<Map.Entry<String, TERMINAL>>> tokens){
-        Stack stack=new Stack();
-        List<Integer> output=new ArrayList();
-        stack.push(0);
-        int step=0;
-        for (List<Map.Entry<String, TERMINAL>> line: tokens) {
-            for (Map.Entry<String, TERMINAL> curr: line) {
-                step++;
-                String action = parseTable.get((int)stack.peek()+1).get(parseTable.get(0).indexOf(curr.getValue().toString()));
-                System.out.println(step+" "+ stack+ line.subList(line.indexOf(curr),line.size())+ " "+ action+ " ");
-                if(action.equals("acc")) {
-                    break;
-                }
-                if(action.equals("")){
-                    return false;
-                }
-                else{
-                    char shiftReduce = action.charAt(0);
-                    int state=Integer.parseInt(action.substring(1));
-                    if(shiftReduce=='s'){
-                        stack.push(state);
-                    }
-                    else if (shiftReduce=='r'){
-                        String[] rightSide=rules.get(state).substring(rules.get(state).indexOf("->")+2).split(" ");
-                        System.out.println(Arrays.toString(rightSide));
-                    }
-                }
-            }
-            System.out.println();
-        }
-        return true;
-    }
 
     public static void main(String[] args){
         List<String> prog = readFile("src/program.j");
         List<String> table = readFile("src/LALR(1) parse table");
         List<String> rules = readFile("src/GRAMMAR");
-        List<List<String>> matrix = parseTable(table);
+        List<List<String>> matrix = Parser.parseTable(table);
 
         List<List<Map.Entry<String, TERMINAL>>> tokens=dfaTokenizer(prog);
         //System.out.println(tokens);
@@ -243,6 +186,6 @@ public class Scan {
         printTerminals(tokens);
         //printTable(matrix);
 
-        System.out.println(parseTree(rules,matrix,tokens));
+        System.out.println(Parser.parseTree(rules,matrix,tokens));
     }
 }
