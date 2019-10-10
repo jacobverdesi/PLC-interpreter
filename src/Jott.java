@@ -1,3 +1,4 @@
+
 import java.util.List;
 import java.util.Map;
 
@@ -13,9 +14,9 @@ public class Jott {
         System.out.println(tokens);
         Tokenizer.printTokens(tokens);
         Tokenizer.printTerminals(tokens);
-        Parser.printTable(matrix);
+        //Parser.printTable(matrix);
         System.out.println();
-        System.out.println();
-        System.out.println(Parser.parseTree(rules,matrix,tokens));
+        List<Integer> tree=Parser.parseTree(rules,matrix,tokens);
+        System.out.println(TreeInterpreter.readTree(tree,rules));
     }
 }
