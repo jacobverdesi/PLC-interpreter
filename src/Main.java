@@ -12,7 +12,7 @@ public class Main {
         //System.out.println(tokens);
         //Tokenizer.printTokens(tokens);
         Tokenizer.printTerminals(tokens);
-        //Tokenizer.printTable(matrix);
+        Parser.printTable(matrix);
         System.out.println();
         System.out.println();
         System.out.println(Parser.parseTree(rules,matrix,tokens));
