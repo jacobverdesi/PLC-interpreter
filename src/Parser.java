@@ -41,8 +41,8 @@ public class Parser {
         tokenList.add(TERMINAL.$);
         Stack<Integer> stack=new Stack<>();
         List<Integer> output=new ArrayList<>();
-        String action="";
-        int state=0;
+        String action;
+        int state;
         int tokenIndex=0;
         int step=0;
         stack.push(0);
