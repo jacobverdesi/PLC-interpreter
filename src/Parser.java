@@ -84,30 +84,15 @@ public class Parser {
                 }
                 String rule=rules.get(Integer.parseInt(action.substring(1))).split(" ")[0];
                 TreeNode node=new TreeNode<>(rule);
-                System.out.println("******");
-                System.out.println("Root: "+node);
-                System.out.println("Removed List: "+removed);
                 for(int i=0;i<removed.size();i++){
-                    System.out.println(removed.get(i));
                     if(removed.get(i) instanceof TreeNode){
-                        //System.out.println(((TreeNode) removed.get(i)).children.getClass());
-
-                        //TreeNode.printTree((TreeNode)removed.get(i));
                         TreeNode child=(TreeNode)removed.get(i);
-
                         node.addChild(child);
-
                     }
                     else {
                         node.addChild(removed.get(i).toString());
                     }
                 }
-                //System.out.println(node.children);
-//                System.out.println("************");
-                System.out.println("New Tree:");
-                TreeNode.printTree(node);
-//                System.out.println("-------------");
-
                 stack.push(node);
             }
             else {
@@ -115,7 +100,6 @@ public class Parser {
             }
             state=parseTable.get(stateIndex(stack));
             currToken= tokenList.get(tokenIndex);
-            //System.out.printf("%s %s %s\n",state,stack,currToken);
             if(actionIndex==-1) action=state.get(parseTable.get(0).indexOf(stack.peek().toString()));
             else action=state.get(parseTable.get(0).indexOf(currToken.toString()));
             if (!action.equals("acc")) {

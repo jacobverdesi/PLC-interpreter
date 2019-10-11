@@ -1,7 +1,4 @@
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Spliterator;
+import java.util.*;
 import java.util.function.Consumer;
 
 
@@ -19,12 +16,16 @@ public class TreeNode<T> implements Iterable<TreeNode<T>> {
 
     public TreeNode<T> addChild(T child) {
         TreeNode<T> childNode = new TreeNode<T>(child);
-        for(Object o:child){
-            childNode.addChild((T) o);
-        }
         childNode.parent = this;
         childNode.depth=depth+1;
-        this.children.add(childNode);
+        if(child instanceof TreeNode){
+            for(Object o:((TreeNode) child).children){
+                TreeNode t= (TreeNode) o;
+                t.depth=depth+2;
+                childNode.addChild((T)t);
+            }
+        }
+        this.children.add(children.size(),childNode);
         return childNode;
     }
     @Override
@@ -38,10 +39,11 @@ public class TreeNode<T> implements Iterable<TreeNode<T>> {
         return iter;
     }
     public static void printTree(TreeNode tree){
-        for (Object o : tree) {
-            TreeNode child = (TreeNode) o;
-            String s="   ";
-            System.out.println(s.repeat(child.depth)+child);
+        String s="   ";
+        System.out.println(tree.depth+" "+s.repeat(tree.depth)+tree);
+        Collections.reverse(tree.children);
+        for (Object t: tree.children){
+            printTree((TreeNode) t);
         }
     }
 
@@ -51,15 +53,18 @@ public class TreeNode<T> implements Iterable<TreeNode<T>> {
     public static void main(String args[]){
         TreeNode root = new TreeNode<String>("root");
 
-        TreeNode node0 = root.addChild("node0");
-        TreeNode node1 = root.addChild("node1");
-        TreeNode node2 = root.addChild("node2");
-
-        TreeNode node20 = node2.addChild(null);
-        TreeNode node21 = node2.addChild("node21");
-        TreeNode node22 = node0.addChild("node22");
-
-        TreeNode node210 = node20.addChild("node210");
+        TreeNode node0 = new TreeNode<>("node0");
+        TreeNode node1 = new TreeNode<>("node1");
+        TreeNode node2 = new TreeNode<>("node2");
+        TreeNode node3 = new TreeNode<>("node3");
+        TreeNode node4 = new TreeNode<>("node4");
+        TreeNode node5 = new TreeNode<>("node5");
+        node4.addChild(node5);
+        node0.addChild(node3);
+        node0.addChild(node4);
+        root.addChild(node0);
+        root.addChild(node1);
+        root.addChild(node2);
 
         TreeNode newRoot=new TreeNode<>("newRoot");
         //for (Object o : root) {
@@ -70,7 +75,7 @@ public class TreeNode<T> implements Iterable<TreeNode<T>> {
 
         newRoot.addChild(root);
         //System.out.println(root.children.get(2).children);
-        printTree(root);
+        //printTree(root);
         printTree(newRoot);
     }
 }
