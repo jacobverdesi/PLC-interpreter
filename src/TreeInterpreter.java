@@ -8,7 +8,7 @@ public class TreeInterpreter {
         System.out.println();
         System.out.println("Tree:");
         System.out.println();
-        System.out.println(tree);
+        TreeNode.printTree(tree);
 //        System.out.println(tree.children);
 //        System.out.println(tree.children.get(0));
 //        TreeNode child=(TreeNode)tree.children.get(0);

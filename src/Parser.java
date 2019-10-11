@@ -1,4 +1,3 @@
-
 import java.util.*;
 
 public class Parser {
@@ -85,17 +84,28 @@ public class Parser {
                 }
                 String rule=rules.get(Integer.parseInt(action.substring(1))).split(" ")[0];
                 TreeNode node=new TreeNode<>(rule);
+                System.out.println("******");
+                System.out.println("Root: "+node);
+                System.out.println("Removed List: "+removed);
                 for(int i=0;i<removed.size();i++){
-                    //System.out.println(removed.get(i).getClass());
                     if(removed.get(i) instanceof TreeNode){
                         //System.out.println(((TreeNode) removed.get(i)).children.getClass());
-                        node.addChild((TreeNode)removed.get(i));
+                        System.out.println(removed.get(i));
+                        for (Object o :((TreeNode) removed.get(i))) {
+                            TreeNode child = (TreeNode) o;
+                            node.addChild(child);
+                        }
+
                     }
                     else {
                         node.addChild(removed.get(i).toString());
                     }
                 }
                 //System.out.println(node.children);
+//                System.out.println("************");
+                TreeNode.printTree(node);
+//                System.out.println("-------------");
+
                 stack.push(node);
             }
             else {
@@ -110,7 +120,7 @@ public class Parser {
                 actionType = actionElement(action);
                 actionIndex = actionIndex(action);
             }
-            System.out.printf("[%2d] %-60s %-70s [%3s]\n",step,stack,tokenList.subList(tokenIndex,tokenList.size()),action);
+            //System.out.printf("[%2d] %-60s %-70s [%3s]\n",step,stack,tokenList.subList(tokenIndex,tokenList.size()),action);
             if(action.equals("")){
                 parseError(0,0,currToken); //TODO get the lines and things
             }
