@@ -5,9 +5,9 @@ import java.util.Map;
 public class Jott {
 
     public static void main(String[] args){
-        List<String> prog = readFile.readFile(args[0]);
-        List<String> table = readFile.readFile("LALR(1) parse table");
-        List<String> rules = readFile.readFile("GRAMMAR");
+        List<String> prog = FileReader.readFile(args[0]);
+        List<String> table = FileReader.readFile("LALR(1) parse table");
+        List<String> rules = FileReader.readFile("GRAMMAR");
         List<List<String>> matrix = Parser.parseTable(table);
 
         List<List<Map.Entry<String, TERMINAL>>> tokens=Tokenizer.dfaTokenizer(prog);
