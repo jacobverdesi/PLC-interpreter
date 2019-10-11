@@ -1,14 +1,12 @@
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class TreeInterpreter {
-    public static boolean readTree(List<Integer> output, List<String> rules){
-        List<String> tree=new ArrayList<>();
-        for (int i=0;i< output.size();i++) {
-            Integer state=output.get(i);
-            tree.add(rules.get(state));
 
-        }
+    public static boolean readTree(TreeNode tree){
+        TreeNode treeNode=(TreeNode)tree.children.get(0);
+
         System.out.println(tree);
         return true;
     }

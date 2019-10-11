@@ -16,7 +16,7 @@ public class Jott {
         Tokenizer.printTerminals(tokens);
         //Parser.printTable(matrix);
         System.out.println();
-        List<Integer> tree=Parser.parseTree(rules,matrix,tokens);
-        System.out.println(TreeInterpreter.readTree(tree,rules));
+        TreeNode tree=Parser.parseTree(rules,matrix,tokens);
+        System.out.println(TreeInterpreter.readTree(tree));
     }
 }
