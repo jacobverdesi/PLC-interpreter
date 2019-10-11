@@ -17,6 +17,6 @@ public class Jott {
         //Parser.printTable(matrix);
         System.out.println();
         TreeNode tree=Parser.parseTree(rules,matrix,tokens);
-        System.out.println(TreeInterpreter.readTree(tree));
+        System.out.println(TreeInterpreter.runTree(tree));
     }
 }

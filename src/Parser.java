@@ -45,21 +45,30 @@ public class Parser {
         }
         else return -1;
     }
-
-    public static TreeNode parseTree(List<String> rules,List<List<String>> parseTable, List<List<Map.Entry<String, TERMINAL>>> tokens){
-        List<TERMINAL> tokenList=new ArrayList<>();
-        for (List<Map.Entry<String,TERMINAL>> t:tokens) {
-            for (Map.Entry<String, TERMINAL> m:t) {
-                tokenList.add(m.getValue());
+    public static TERMINAL checkTerminal(TERMINAL rule){
+        for(TERMINAL t:TERMINAL.values()){
+            if(t.name().equals(rule)){
+                return t;
             }
         }
-        tokenList.add(TERMINAL.$);
+        return null;
+    }
+
+    public static TreeNode parseTree(List<String> rules,List<List<String>> parseTable, List<List<Map.Entry<String, TERMINAL>>> tokens){
+        List<Map.Entry<String, TERMINAL>> tokenList=new ArrayList<>();
+        for (List<Map.Entry<String,TERMINAL>> t:tokens) {
+            tokenList.addAll(t);
+        }
+        Map.Entry<String, TERMINAL> end=new AbstractMap.SimpleEntry<>("EOF",TERMINAL.$);
+
+
+        tokenList.add(end);
 
         Stack stack=new Stack<>();
         stack.push(0);
 
         int tokenIndex=0;
-        TERMINAL currToken= tokenList.get(tokenIndex);
+        TERMINAL currToken= tokenList.get(tokenIndex).getValue();
         List<String> state=parseTable.get(stateIndex(stack));
         String action=state.get(parseTable.get(0).indexOf(currToken.toString()));
         char actionType=actionElement(action);
@@ -69,7 +78,7 @@ public class Parser {
 
         while (!action.equals("acc") ){
             if(actionType=='s'){
-                stack.push(currToken);
+                stack.push(tokenList.get(tokenIndex).getKey());
                 stack.push(actionIndex);
                 tokenIndex++;
             }
@@ -83,7 +92,9 @@ public class Parser {
                     }
                 }
                 String rule=rules.get(Integer.parseInt(action.substring(1))).split(" ")[0];
-                TreeNode node=new TreeNode<>(rule);
+
+                TreeNode node = new TreeNode<>(rule);
+
                 for(int i=0;i<removed.size();i++){
                     if(removed.get(i) instanceof TreeNode){
                         TreeNode child=(TreeNode)removed.get(i);
@@ -99,17 +110,18 @@ public class Parser {
                 stack.push(actionIndex);
             }
             state=parseTable.get(stateIndex(stack));
-            currToken= tokenList.get(tokenIndex);
+            currToken= tokenList.get(tokenIndex).getValue();
             if(actionIndex==-1) action=state.get(parseTable.get(0).indexOf(stack.peek().toString()));
             else action=state.get(parseTable.get(0).indexOf(currToken.toString()));
+            if(action.equals("")){
+                parseError(0,0,currToken); //TODO get the lines and things
+            }
             if (!action.equals("acc")) {
                 actionType = actionElement(action);
                 actionIndex = actionIndex(action);
             }
-            //System.out.printf("[%2d] %-60s %-70s [%3s]\n",step,stack,tokenList.subList(tokenIndex,tokenList.size()),action);
-            if(action.equals("")){
-                parseError(0,0,currToken); //TODO get the lines and things
-            }
+            System.out.printf("[%2d] %-60s %-70s [%3s]\n",step,stack,tokenList.subList(tokenIndex,tokenList.size()),action);
+
             step++;
 
         }
