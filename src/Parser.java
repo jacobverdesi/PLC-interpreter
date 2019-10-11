@@ -86,16 +86,16 @@ public class Parser {
                 String rule=rules.get(Integer.parseInt(action.substring(1))).split(" ")[0];
                 TreeNode node=new TreeNode<>(rule);
                 for(int i=0;i<removed.size();i++){
-                    System.out.println(removed.get(i).getClass());
+                    //System.out.println(removed.get(i).getClass());
                     if(removed.get(i) instanceof TreeNode){
-                        System.out.println(((TreeNode) removed.get(i)).children.getClass());
+                        //System.out.println(((TreeNode) removed.get(i)).children.getClass());
                         node.addChild((TreeNode)removed.get(i));
                     }
                     else {
                         node.addChild(removed.get(i).toString());
                     }
                 }
-                System.out.println(node.children);
+                //System.out.println(node.children);
                 stack.push(node);
             }
             else {

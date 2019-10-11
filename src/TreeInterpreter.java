@@ -9,11 +9,11 @@ public class TreeInterpreter {
         System.out.println("Tree:");
         System.out.println();
         System.out.println(tree);
-        System.out.println(tree.children);
-        System.out.println(tree.children.get(0));
-        TreeNode child=(TreeNode)tree.children.get(0);
-        System.out.println(child);
-        System.out.println(child.children);
+//        System.out.println(tree.children);
+//        System.out.println(tree.children.get(0));
+//        TreeNode child=(TreeNode)tree.children.get(0);
+//        System.out.println(child);
+//        System.out.println(child.children);
 
         return true;
     }
