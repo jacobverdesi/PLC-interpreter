@@ -47,7 +47,7 @@ public class TreeNode<T> implements Iterable<TreeNode<T>> {
 
         TreeNode<String> node210 = node20.addChild("node210");
 
-        System.out.println(root.children);
+        System.out.println(root.children.get(2).children);
     }
 }
 

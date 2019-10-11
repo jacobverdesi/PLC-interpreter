@@ -5,9 +5,16 @@ import java.util.List;
 public class TreeInterpreter {
 
     public static boolean readTree(TreeNode tree){
-        TreeNode treeNode=(TreeNode)tree.children.get(0);
-
+        System.out.println();
+        System.out.println("Tree:");
+        System.out.println();
         System.out.println(tree);
+        System.out.println(tree.children);
+        System.out.println(tree.children.get(0));
+        TreeNode child=(TreeNode)tree.children.get(0);
+        System.out.println(child);
+        System.out.println(child.children);
+
         return true;
     }
 }
