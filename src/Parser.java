@@ -88,13 +88,14 @@ public class Parser {
                 System.out.println("Root: "+node);
                 System.out.println("Removed List: "+removed);
                 for(int i=0;i<removed.size();i++){
+                    System.out.println(removed.get(i));
                     if(removed.get(i) instanceof TreeNode){
                         //System.out.println(((TreeNode) removed.get(i)).children.getClass());
-                        System.out.println(removed.get(i));
-                        for (Object o :((TreeNode) removed.get(i))) {
-                            TreeNode child = (TreeNode) o;
-                            node.addChild(child);
-                        }
+
+                        //TreeNode.printTree((TreeNode)removed.get(i));
+                        TreeNode child=(TreeNode)removed.get(i);
+
+                        node.addChild(child);
 
                     }
                     else {
@@ -103,6 +104,7 @@ public class Parser {
                 }
                 //System.out.println(node.children);
 //                System.out.println("************");
+                System.out.println("New Tree:");
                 TreeNode.printTree(node);
 //                System.out.println("-------------");
 
