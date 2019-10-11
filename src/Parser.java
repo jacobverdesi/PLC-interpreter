@@ -112,8 +112,7 @@ public class Parser {
             }
             System.out.printf("[%2d] %-60s %-70s [%3s]\n",step,stack,tokenList.subList(tokenIndex,tokenList.size()),action);
             if(action.equals("")){
-                parseError(0,0,currToken);
-                //return null;
+                parseError(0,0,currToken); //TODO get the lines and things
             }
             step++;
 
