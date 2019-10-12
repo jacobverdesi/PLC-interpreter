@@ -79,7 +79,7 @@ public class TreeInterpreter {
                     case "/":
                         int lh=Integer.parseInt(i_exp.get(i+1));
                         if (lh==0){
-                            System.err.println("Runtime Error: Divide by zero, \"print( x / 0 );\" (inputs/prog4.j:3");
+                            System.err.println("Runtime Error: Divide by zero");
                             System.exit(0);
                         }
                         rh=rh / lh;
@@ -106,10 +106,15 @@ public class TreeInterpreter {
                         rh=rh * Double.parseDouble(d_exp.get(i+1));
                         break;
                     case "/":
-                        rh=rh / Double.parseDouble(d_exp.get(i+1));
+                        double lh=Double.parseDouble(d_exp.get(i+1));
+                        if (lh==0){
+                            System.err.println("Runtime Error: Divide by zero");
+                            System.exit(0);
+                        }
+                        rh=rh / lh;
                         break;
                     case "^":
-                        rh= (int) Math.pow(rh , Double.parseDouble(d_exp.get(i+1)));
+                        rh=Math.pow(rh , Double.parseDouble(d_exp.get(i+1)));
                         break;
                 }
             }
@@ -133,7 +138,7 @@ public class TreeInterpreter {
                 expr.add(""+idValue);
             }
             catch(ClassCastException ex) {
-                System.err.format("Type mismatch: Expected Double got: "+handleID((TreeNode) child.get(0)).getClass().getSimpleName());
+                System.err.format("Syntax Error: Type mismatch: Expected Double got: "+handleID((TreeNode) child.get(0)).getClass().getSimpleName());
                 System.exit(0);
             }
             expr.addAll(handleDoubleExpr2((TreeNode) child.get(1)));
@@ -205,7 +210,7 @@ public class TreeInterpreter {
                 expr.add(""+idValue);
             }
             catch(ClassCastException ex) {
-                System.err.format("Type mismatch: Expected Integerb  got: "+handleID((TreeNode) child.get(0)).getClass().getSimpleName());
+                System.err.format("Type mismatch: Expected Integer got: "+handleID((TreeNode) child.get(0)).getClass().getSimpleName());
                 System.exit(0);
             }
             expr.addAll(handleIntegerExpr2((TreeNode) child.get(1)));
@@ -305,16 +310,16 @@ public class TreeInterpreter {
 
 
     public static void runTree(TreeNode tree){
-        System.out.println();
-        System.out.println("Tree:");
-        System.out.println();
-        TreeNode.printTree(tree);
-        System.out.println();
-        System.out.println("Statements:");
+//        System.out.println();
+//        System.out.println("Tree:");
+//        System.out.println();
+        TreeNode.reverseTree(tree);
+//        System.out.println();
+//        System.out.println("Statements:");
         List<TreeNode> statements = findSTMTS(tree,new ArrayList<>());
         Collections.reverse(statements);
-        System.out.println(statements+"\n");
-        System.out.println("OUTPUT");
+//        System.out.println(statements+"\n");
+//        System.out.println("OUTPUT");
         for (TreeNode statement:statements) {
             if (statement.toString().equals("PRINTSTMT")) {
                 handlePrint(statement);

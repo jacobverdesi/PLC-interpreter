@@ -40,14 +40,18 @@ public class TreeNode<T> implements Iterable<TreeNode<T>> {
     }
     public static void printTree(TreeNode tree){
         String s="   ";
-        System.out.println(tree.depth+" "+s.repeat(tree.depth)+tree);
+        //System.out.println(tree.depth+" "+s.repeat(tree.depth)+tree);
         Collections.reverse(tree.children);
         for (Object t: tree.children){
             printTree((TreeNode) t);
         }
     }
-
-
+    public static void reverseTree(TreeNode tree){
+        Collections.reverse(tree.children);
+        for (Object t: tree.children){
+            reverseTree((TreeNode) t);
+        }
+    }
 
     // other features ...
     public static void main(String args[]){

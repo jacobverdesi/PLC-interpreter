@@ -74,7 +74,7 @@ public class Parser {
         char actionType=actionElement(action);
         int actionIndex = actionIndex(action);
         int step=1;
-        System.out.printf("[%2d] %-60s %-70s [%3s]\n",step++,stack,tokenList.subList(tokenIndex,tokenList.size()),action);
+        //System.out.printf("[%2d] %-60s %-70s [%3s]\n",step++,stack,tokenList.subList(tokenIndex,tokenList.size()),action);
 
         while (!action.equals("acc") ){
             if(actionType=='s'){
@@ -120,7 +120,7 @@ public class Parser {
                 actionType = actionElement(action);
                 actionIndex = actionIndex(action);
             }
-            System.out.printf("[%2d] %-60s %-70s [%3s]\n",step,stack,tokenList.subList(tokenIndex,tokenList.size()),action);
+            //System.out.printf("[%2d] %-60s %-70s [%3s]\n",step,stack,tokenList.subList(tokenIndex,tokenList.size()),action);
 
             step++;
 
