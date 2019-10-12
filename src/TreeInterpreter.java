@@ -45,7 +45,7 @@ public class TreeInterpreter {
                 return;
             }
         }
-        Map.Entry<String,Object> id=new AbstractMap.SimpleEntry<>(child.get(1).toString(),(int)handleExpr((TreeNode) treeNode.children.get(3)));
+        Map.Entry<String,Object> id=new AbstractMap.SimpleEntry<>(child.get(1).toString(),handleExpr((TreeNode) treeNode.children.get(3)));
         ids.add(id);
     }
     public static void handleSTRasmt(TreeNode treeNode){
@@ -61,10 +61,8 @@ public class TreeInterpreter {
         ids.add(id);
     }
     public static Object handleExpr(TreeNode exprType){
-        System.out.println(exprType);
         if (exprType.toString().equals("I_EXPR")) {
             List<String> i_exp=handleIntegerExpr(exprType);
-            System.out.println(i_exp);
             int rh=Integer.parseInt(i_exp.get(0));
             for(int i=1;i<i_exp.size();i+=2){
                 switch (i_exp.get(i)){
@@ -117,10 +115,8 @@ public class TreeInterpreter {
         List child=treeNode.children;
         Collections.reverse(child);
         List<String> expr=new ArrayList<>();
-
         if(child.size()==2&&child.get(1).toString().equals("D_EXPR2")){
             Object value=handleID((TreeNode) child.get(0));
-            System.out.println(value);
             try{
                 double idValue=(double)(value);
                 expr.add(""+idValue);
@@ -129,7 +125,7 @@ public class TreeInterpreter {
                 System.err.format("Type mismatch: Expected Double got: "+handleID((TreeNode) child.get(0)).getClass().getSimpleName());
                 System.exit(0);
             }
-            expr.add(handleDoubleExpr2((TreeNode) child.get(1)));
+            expr.addAll(handleDoubleExpr2((TreeNode) child.get(1)));
         }
         else if(child.size()==2&&child.get(0).toString().equals("SIGN")){
             if(handleSign((TreeNode)child.get(0)).equals("-")) {
@@ -174,15 +170,18 @@ public class TreeInterpreter {
         }
         return expr;
     }
-    public static String handleDoubleExpr2(TreeNode treeNode){
+    public static List<String> handleDoubleExpr2(TreeNode treeNode){
         List<TreeNode> child=treeNode.children;
-        if(child.size()==0){
-            return "";
+        Collections.reverse(child);
+        List<String> expr=new ArrayList<>();
+        if(child.size()==3){
+            expr.add(handleOperation(child.get(0)));
+            expr.addAll(handleDoubleExpr(child.get(1)));
+            expr.addAll(handleDoubleExpr2(child.get(2)));
         }
-        else{
-            return handleOperation(child.get(0))+handleDoubleExpr(child.get(1))+handleDoubleExpr2(child.get(2));
-        }
+        return expr;
     }
+
 
     public static List<String> handleIntegerExpr(TreeNode treeNode){
         List child=treeNode.children;
@@ -190,13 +189,12 @@ public class TreeInterpreter {
         List<String> expr=new ArrayList<>();
         if(child.size()==2&&child.get(1).toString().equals("I_EXPR2")){
             Object value=handleID((TreeNode) child.get(0));
-            System.out.println(value);
             try{
                 int idValue=(int)(value);
                 expr.add(""+idValue);
             }
             catch(ClassCastException ex) {
-                System.err.format("Type mismatch: Expected Double got: "+handleID((TreeNode) child.get(0)).getClass().getSimpleName());
+                System.err.format("Type mismatch: Expected Integer got: "+handleID((TreeNode) child.get(0)).getClass().getSimpleName());
                 System.exit(0);
             }
             expr.addAll(handleIntegerExpr2((TreeNode) child.get(1)));
@@ -244,14 +242,10 @@ public class TreeInterpreter {
         List<TreeNode> child=treeNode.children;
         Collections.reverse(child);
         List<String> expr=new ArrayList<>();
-        if(child.size()==0){
-            return expr;
-        }
-        else{
+        if(child.size()==3){
             expr.add(handleOperation(child.get(0)));
             expr.addAll(handleIntegerExpr(child.get(1)));
             expr.addAll(handleIntegerExpr2(child.get(2)));
-
         }
         return expr;
     }
@@ -295,7 +289,7 @@ public class TreeInterpreter {
             } else if (statement.toString().equals("EXPR")) {
                 handleExpr((TreeNode) statement.children.get(0));
             } else if (statement.toString().equals("DOUBLEASMT")) {
-
+                handleDOUBLEasmt(statement);
             } else if (statement.toString().equals("INTASMT")) {
                 handleINTasmt(statement);
             } else if (statement.toString().equals("STRASMT")) {
