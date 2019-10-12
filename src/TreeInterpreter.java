@@ -109,6 +109,9 @@ public class TreeInterpreter {
             }
             return rh;
         }
+        else if(exprType.toString().equals("S_EXPR")){
+            return handleStringExpr(exprType);
+        }
         return exprType;
     }
     public static List<String> handleDoubleExpr(TreeNode treeNode){
@@ -194,7 +197,7 @@ public class TreeInterpreter {
                 expr.add(""+idValue);
             }
             catch(ClassCastException ex) {
-                System.err.format("Type mismatch: Expected Integer got: "+handleID((TreeNode) child.get(0)).getClass().getSimpleName());
+                System.err.format("Type mismatch: Expected Integerb  got: "+handleID((TreeNode) child.get(0)).getClass().getSimpleName());
                 System.exit(0);
             }
             expr.addAll(handleIntegerExpr2((TreeNode) child.get(1)));
@@ -249,6 +252,27 @@ public class TreeInterpreter {
         }
         return expr;
     }
+    public static String handleStringExpr(TreeNode treeNode){
+        List<TreeNode> child=treeNode.children;
+        Collections.reverse(child);
+
+        if (child.get(0).toString().charAt(0)=='\"'){
+            return child.get(0).toString().substring(1,child.get(0).toString().length()-1);
+        }
+        else if(child.size()==1) {
+            Object value=handleID(child.get(0));
+            return (String) value;
+        }
+        else if (child.get(0).toString().equals("concat")){
+            return handleStringExpr(child.get(2))+handleStringExpr(child.get(4));
+        }
+        else if (child.get(0).toString().equals("charAt")){
+            String s=handleStringExpr(child.get(2));
+            int index= (int) handleExpr(child.get(4));
+            return s.charAt(index-1)+"";
+        }
+        return null;
+    }
     public static String handleSign(TreeNode treeNode){
         if(treeNode.children.size()!=0) {
             return treeNode.children.get(0).toString().equals("-") ? "-" : "";
@@ -272,7 +296,7 @@ public class TreeInterpreter {
 
 
 
-    public static boolean runTree(TreeNode tree){
+    public static void runTree(TreeNode tree){
         System.out.println();
         System.out.println("Tree:");
         System.out.println();
@@ -293,10 +317,8 @@ public class TreeInterpreter {
             } else if (statement.toString().equals("INTASMT")) {
                 handleINTasmt(statement);
             } else if (statement.toString().equals("STRASMT")) {
-
+                handleStringExpr(statement);
             }
         }
-
-    return true;
     }
 }
