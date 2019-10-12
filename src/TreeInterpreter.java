@@ -57,7 +57,7 @@ public class TreeInterpreter {
                 return;
             }
         }
-        Map.Entry<String,Object> id=new AbstractMap.SimpleEntry<>(child.get(1).toString(),(int)handleExpr((TreeNode) treeNode.children.get(3)));
+        Map.Entry<String,Object> id=new AbstractMap.SimpleEntry<>(child.get(1).toString(),handleExpr((TreeNode) treeNode.children.get(3)));
         ids.add(id);
     }
     public static Object handleExpr(TreeNode exprType){
@@ -317,7 +317,7 @@ public class TreeInterpreter {
             } else if (statement.toString().equals("INTASMT")) {
                 handleINTasmt(statement);
             } else if (statement.toString().equals("STRASMT")) {
-                handleStringExpr(statement);
+                handleSTRasmt(statement);
             }
         }
     }
