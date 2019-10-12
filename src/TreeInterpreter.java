@@ -61,6 +61,7 @@ public class TreeInterpreter {
         ids.add(id);
     }
     public static Object handleExpr(TreeNode exprType){
+
         if (exprType.toString().equals("I_EXPR")) {
             List<String> i_exp=handleIntegerExpr(exprType);
             int rh=Integer.parseInt(i_exp.get(0));
@@ -76,7 +77,12 @@ public class TreeInterpreter {
                         rh=rh * Integer.parseInt(i_exp.get(i+1));
                         break;
                     case "/":
-                        rh=rh / Integer.parseInt(i_exp.get(i+1));
+                        int lh=Integer.parseInt(i_exp.get(i+1));
+                        if (lh==0){
+                            System.err.println("Runtime Error: Divide by zero, \"print( x / 0 );\" (inputs/prog4.j:3");
+                            System.exit(0);
+                        }
+                        rh=rh / lh;
                         break;
                     case "^":
                         rh= (int) Math.pow(rh , Integer.parseInt(i_exp.get(i+1)));
@@ -112,7 +118,9 @@ public class TreeInterpreter {
         else if(exprType.toString().equals("S_EXPR")){
             return handleStringExpr(exprType);
         }
-        return exprType;
+        else {
+            return handleID(exprType);
+        }
     }
     public static List<String> handleDoubleExpr(TreeNode treeNode){
         List child=treeNode.children;
@@ -269,7 +277,7 @@ public class TreeInterpreter {
         else if (child.get(0).toString().equals("charAt")){
             String s=handleStringExpr(child.get(2));
             int index= (int) handleExpr(child.get(4));
-            return s.charAt(index-1)+"";
+            return s.charAt(index)+"";
         }
         return null;
     }
