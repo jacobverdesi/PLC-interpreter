@@ -61,7 +61,6 @@ public class Parser {
         }
         Map.Entry<String, TERMINAL> end=new AbstractMap.SimpleEntry<>("EOF",TERMINAL.$);
 
-
         tokenList.add(end);
 
         Stack stack=new Stack<>();
@@ -110,19 +109,19 @@ public class Parser {
                 stack.push(actionIndex);
             }
             state=parseTable.get(stateIndex(stack));
+            TERMINAL temp=currToken;
             currToken= tokenList.get(tokenIndex).getValue();
+            if(currToken.equals(TERMINAL.END)&&currToken!=temp) step++;
             if(actionIndex==-1) action=state.get(parseTable.get(0).indexOf(stack.peek().toString()));
             else action=state.get(parseTable.get(0).indexOf(currToken.toString()));
             if(action.equals("")){
-                parseError(0,0,currToken); //TODO get the lines and things
+                parseError(step,tokenIndex,currToken);
             }
             if (!action.equals("acc")) {
                 actionType = actionElement(action);
                 actionIndex = actionIndex(action);
             }
             //System.out.printf("[%2d] %-60s %-70s [%3s]\n",step,stack,tokenList.subList(tokenIndex,tokenList.size()),action);
-
-            step++;
 
         }
         stack.pop();
