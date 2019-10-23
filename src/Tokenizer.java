@@ -44,13 +44,16 @@ public class Tokenizer {
         for(String line: lines){
             char[] chars=line.toCharArray();
             for (int i=0; i < chars.length;i++){
-                if(chars[i]=='/' && chars[i+1]=='/') break; // skip rest of line if  finds a comment
+                if(chars[i]=='/' &&chars.length>1&& chars[i+1]=='/') break; // skip rest of line if  finds a comment
                 if(state.getState()==0 && (chars[i]==' '|| chars[i]=='\n' || chars[i]=='\t')) continue; //ignore these chars
                 state.setCurr(chars[i]); // set the dfa current character
                 if(i<chars.length-1) state.setNext(chars[i + 1]); // set the dfa's next character if in range
+                else state.setNext(' '); //TODO: MIGHT HAVE BROKE SOMETHING
                 char curr=state.getCurr(); // get curr character ....yes redundant
                 char next=state.getNext(); // get next character ....yes redundant
                 //System.out.println("i: "+i+" current: "+state.getCurr()+" next: "+state.getNext()+ " state: "+state.getState());
+                System.out.println(i+", "+state.getToken()+" ,"+curr+","+next+","+state.getState());
+
                 switch (state.getState()){ // get the state and do something with it
                     case 0:
                         if (Character.isLetter(curr)){
@@ -62,7 +65,21 @@ public class Tokenizer {
                             state.setState(3);
                             if(next!='.' && !Character.isDigit(next)) state.reset(TERMINAL.INT);
                         }
-                        else if (curr == '=') state.reset(TERMINAL.ASSIGN);
+                        else if (curr == '<') {
+                            state.setState(16);
+                            if(next!='=') state.reset(TERMINAL.LESS);
+                        }
+                        else if (curr == '>') {
+                            state.setState(17);
+                            if(next!='=') state.reset(TERMINAL.GREATER);
+                        }
+                        else if (curr == '!') {
+                            state.setState(18);
+                        }
+                        else if (curr == '=') {
+                            state.setState(5);
+                            if(next!='=') state.reset(TERMINAL.ASSIGN);
+                        }
                         else if (curr == '(') state.reset(TERMINAL.L_PAREN);
                         else if (curr == ')') state.reset(TERMINAL.R_PAREN);
                         else if (curr == ';') state.reset(TERMINAL.END);
@@ -72,6 +89,8 @@ public class Tokenizer {
                         else if (curr == '/') state.reset(TERMINAL.DIVIDE);
                         else if (curr == ',') state.reset(TERMINAL.COMMA);
                         else if (curr == '^') state.reset(TERMINAL.POWER);
+                        else if (curr == '{') state.reset(TERMINAL.L_BRACKET);
+                        else if (curr == '}') state.reset(TERMINAL.R_BRACKET);
                         else if (curr == '\"') state.setState(14);
                         else tokenError(lineNum,i,curr);
                         break;
@@ -84,6 +103,10 @@ public class Tokenizer {
                                 else if (state.getToken().equals("Integer")) state.reset(TERMINAL.I_ASMT);
                                 else if (state.getToken().equals("Double")) state.reset(TERMINAL.D_ASMT);
                                 else if (state.getToken().equals("String")) state.reset(TERMINAL.S_ASMT);
+                                else if (state.getToken().equals("if")) state.reset(TERMINAL.IF);
+                                else if (state.getToken().equals("else")) state.reset(TERMINAL.ELSE);
+                                else if (state.getToken().equals("while")) state.reset(TERMINAL.WHILE);
+                                else if (state.getToken().equals("for")) state.reset(TERMINAL.FOR);
                                 else state.reset(TERMINAL.ID);
                             }
                             continue;
@@ -91,7 +114,8 @@ public class Tokenizer {
                         else tokenError(lineNum,i,curr);
                         break;
                     case 2:
-                        if(Character.isDigit(curr)) state.setState(4);
+                        if (!Character.isDigit(next) && Character.isDigit(curr)) state.reset(TERMINAL.DOUBLE);
+                        else if(Character.isDigit(curr)) state.setState(4);
                         else tokenError(lineNum,i,curr);
                         break;
                     case 3:
@@ -112,9 +136,25 @@ public class Tokenizer {
                         }
                         else tokenError(lineNum,i,curr);
                         break;
+                    case 5:
+                        if (curr=='=') state.reset(TERMINAL.EQUAL);
+                        else tokenError(lineNum,i,curr);
+                        break;
                     case 14:
                         if(Character.isDigit(curr) || Character.isLetter(curr) || curr== ' ') continue;
                         else if (curr=='\"') state.reset(TERMINAL.STRING);
+                        else tokenError(lineNum,i,curr);
+                        break;
+                    case 16:
+                        if (curr=='=') state.reset(TERMINAL.LESSEQUAL);
+                        else tokenError(lineNum,i,curr);
+                        break;
+                    case 17:
+                        if (curr=='=') state.reset(TERMINAL.GREATEREQUAL);
+                        else tokenError(lineNum,i,curr);
+                        break;
+                    case 18:
+                        if (curr=='=') state.reset(TERMINAL.NOTEQUAL);
                         else tokenError(lineNum,i,curr);
                         break;
                 }
@@ -149,5 +189,13 @@ public class Tokenizer {
             }
             System.out.println();
         }
+    }
+    public static void main (String args[]){
+        List<String> prog = FileReader.readFile("C:\\Users\\Jacob's Laptop\\Desktop\\CS CLASSES\\PLC\\Phase1\\Phase1\\src\\tokenTest.j");
+
+        List<List<Map.Entry<String, TERMINAL>>> tokens=Tokenizer.dfaTokenizer(prog);
+        Tokenizer.printTokens(tokens);
+        Tokenizer.printTerminals(tokens);
+
     }
 }
