@@ -52,7 +52,7 @@ public class Tokenizer {
                 char curr=state.getCurr(); // get curr character ....yes redundant
                 char next=state.getNext(); // get next character ....yes redundant
                 //System.out.println("i: "+i+" current: "+state.getCurr()+" next: "+state.getNext()+ " state: "+state.getState());
-                System.out.println(i+", "+state.getToken()+" ,"+curr+","+next+","+state.getState());
+                //System.out.println(i+", "+state.getToken()+" ,"+curr+","+next+","+state.getState());
 
                 switch (state.getState()){ // get the state and do something with it
                     case 0:
