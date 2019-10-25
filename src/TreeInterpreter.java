@@ -307,8 +307,6 @@ public class TreeInterpreter {
         return null;
     }
 
-
-
     public static void runTree(TreeNode tree){
 //        System.out.println();
 //        System.out.println("Tree:");
