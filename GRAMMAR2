@@ -1,0 +1,54 @@
+PROGRAMP -> PROGRAM.
+PROGRAM -> STMT_LIST.
+STMT_LIST -> STMT STMT_LIST.
+STMT_LIST -> .
+STMT -> PRINTSTMT.
+STMT -> DOUBLEASMT.
+STMT -> INTASMT.
+STMT -> STRASMT.
+STMT -> REASMT.
+STMT -> if l_paren EXPR r_paren l_bracket STMT_LIST r_bracket.
+STMT -> if l_paren EXPR r_paren l_bracket STMT_LIST r_bracket else l_bracket STMT_LIST r_bracket.
+STMT -> while l_paren I_EXPR r_paren l_bracket STMT_LIST r_bracket.
+STMT -> for l_paren INTASMT end I_EXPR end REASMT r_paren l_bracket STMT_LIST r_bracket.
+STMT -> EXPR end.
+EXPR -> I_EXPR.
+EXPR -> D_EXPR.
+EXPR -> S_EXPR.
+EXPR -> ID_EXPR.
+PRINTSTMT -> print l_paren EXPR r_paren end.
+DOUBLEASMT -> doublea id assign D_EXPR end.
+INTASMT -> integera id assign I_EXPR end.
+STRASMT -> stringa id assign S_EXPR end.
+REASMT -> id assign EXPR end.
+OP -> plus.
+OP -> minus.
+OP -> multi.
+OP -> divide.
+OP -> power.
+OP -> less.
+OP -> lessequal.
+OP -> greater.
+OP -> greaterequal.
+OP -> equal.
+OP -> notequal.
+SIGN -> plus.
+SIGN -> minus.
+SIGN -> .
+ID_EXPR -> id ID_EXPR2 ID_EXPR3.
+ID_EXPR -> I_EXPR OP ID_EXPR ID_EXPR3.
+ID_EXPR -> D_EXPR OP ID_EXPR ID_EXPR3.
+ID_EXPR2 -> OP ID_EXPR.
+ID_EXPR2 -> .
+ID_EXPR3 -> OP I_EXPR ID_EXPR3
+ID_EXPR3 -> OP D_EXPR ID_EXPR3
+ID_EXPR3 -> .
+D_EXPR -> SIGN double D_EXPR2.
+D_EXPR2 -> OP D_EXPR.
+D_EXPR2 -> .
+I_EXPR -> SIGN int I_EXPR2.
+I_EXPR2 -> OP I_EXPR.
+I_EXPR2 -> .
+S_EXPR -> string.
+S_EXPR -> concat l_paren S_EXPR comma S_EXPR r_paren.
+S_EXPR -> charat l_paren S_EXPR comma I_EXPR r_paren.
