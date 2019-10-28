@@ -30,7 +30,6 @@ public class Parser {
         return matrix;
     }
     private static int stateIndex(Stack stack) {
-
         return (int)stack.get(2 * ((stack.size() - 1) >> 1))+1;
     }
     public static char actionElement(String action){
@@ -108,12 +107,14 @@ public class Parser {
             else {
                 stack.push(actionIndex);
             }
+
             state=parseTable.get(stateIndex(stack));
             TERMINAL temp=currToken;
             currToken= tokenList.get(tokenIndex).getValue();
             if(currToken.equals(TERMINAL.END)&&currToken!=temp) step++;
             if(actionIndex==-1) action=state.get(parseTable.get(0).indexOf(stack.peek().toString()));
             else action=state.get(parseTable.get(0).indexOf(currToken.toString()));
+
             if(action.equals("")){
                 parseError(step,tokenIndex,currToken);
             }
