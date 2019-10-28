@@ -39,7 +39,8 @@ public class TreeNode<T> implements Iterable<TreeNode<T>> {
         return iter;
     }
     public static void printTree(TreeNode tree){
-        //System.out.println(tree.depth+" "+s.repeat(tree.depth)+tree);
+        String s="   ";
+        System.out.println(tree.depth+" "+s.repeat(tree.depth)+tree);
         Collections.reverse(tree.children);
         for (Object t: tree.children){
             printTree((TreeNode) t);

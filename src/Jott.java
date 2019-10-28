@@ -11,15 +11,15 @@ public class Jott {
         List<String> rules = FileReader.readFile("GRAMMAR");
         List<List<String>> matrix = Parser.parseTable(table);
 
+        List<List<Map.Entry<String, TERMINAL>>> tokens=Tokenizer.dfaTokenizer(prog);
 
-//        System.out.println(tokens);
-//        Tokenizer.printTokens(tokens);
+        System.out.println(tokens);
+        Tokenizer.printTokens(tokens);
 //        Tokenizer.printTerminals(tokens);
-//        //Parser.printTable(matrix);
+//       //Parser.printTable(matrix);
 //        System.out.println();
        // List<String> prog = FileReader.readFile("tests/prog8.j");
-        List<List<Map.Entry<String, TERMINAL>>> tokens=Tokenizer.dfaTokenizer(prog);
         TreeNode tree=Parser.parseTree(rules,matrix,tokens);
-        TreeInterpreter.runTree(tree);
+        TreeNode.printTree(tree);
     }
 }
