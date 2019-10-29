@@ -1,0 +1,15 @@
+Integer x = 3;
+print( x );
+x = 8;
+print( x );
+print( x + 5 );
+x = 10;
+print( x + 5 );
+Double y = 3.3;
+print( y );
+y = 4.6;
+print( y );
+String z = "Hello";
+print( z );
+String z = "Goodbye";
+print( z );
