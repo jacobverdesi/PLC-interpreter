@@ -1,4 +1,1 @@
-Integer x = 5;
-print( x );
-x = 7;
-print( x );
+if( x > 2 ) {print( "foo" );}if( x > 2 ) {print( "foo" );}else { print( "bar" ); }

@@ -14,12 +14,14 @@ public class Jott {
         List<List<Map.Entry<String, TERMINAL>>> tokens=Tokenizer.dfaTokenizer(prog);
 
         System.out.println(tokens);
-        Tokenizer.printTokens(tokens);
-//        Tokenizer.printTerminals(tokens);
+//        Tokenizer.printTokens(tokens);
+        Tokenizer.printTerminals(tokens);
 //       //Parser.printTable(matrix);
-//        System.out.println();
+//
        // List<String> prog = FileReader.readFile("tests/prog8.j");
         TreeNode tree=Parser.parseTree(rules,matrix,tokens);
+        System.out.println("\nProgram Tree: \n");
         TreeNode.printTree(tree);
+        TreeInterpreter.runTree(tree);
     }
 }
