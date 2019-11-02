@@ -19,9 +19,11 @@ public class Jott {
 //       //Parser.printTable(matrix);
 //
        // List<String> prog = FileReader.readFile("tests/prog8.j");
-        TreeNode tree=Parser.parseTree(rules,matrix,tokens);
         System.out.println("\nProgram Tree: \n");
+        TreeNode tree=Parser.parseTree(rules,matrix,tokens);
         TreeNode.printTree(tree);
+        System.out.println("\nOutput: \n");
+
         TreeInterpreter.runTree(tree);
     }
 }
