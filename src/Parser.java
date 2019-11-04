@@ -1,6 +1,7 @@
 import java.util.*;
 
 public class Parser {
+    private static List<Map.Entry<String,Object>> ids= new ArrayList<>();
     public static void printTable (List<List<String>> matrix){
         for(List<String> line: matrix){
             for(Object state:line){
@@ -52,7 +53,34 @@ public class Parser {
         }
         return null;
     }
-
+    private static TERMINAL handleID(String idName){
+        TERMINAL currToken;
+        boolean found = false;
+        for (Map.Entry<String,Object> id:ids) {
+            if (id.getKey().equals(idName)) {
+                System.out.println(id);
+                if (id.getValue().equals("Integer")) {
+                    currToken = TERMINAL.INT;
+                } else if (id.getValue().equals("Double")) {
+                    currToken = TERMINAL.DOUBLE;
+                } else if (id.getValue().equals("String")) {
+                    currToken = TERMINAL.STRING;
+                }
+                found=true;
+            }
+        }
+        if (!found){
+            String identifier = stack.get(stack.size() - 2).toString();
+            if(identifier.equals("Integer") || identifier.equals("Double") || identifier.equals("String")) {
+                Map.Entry<String, Object> id = new AbstractMap.SimpleEntry<>(idName, identifier);
+                ids.add(id);
+            }
+            else{
+                parseError(step,tokenIndex,currToken);
+            }
+        }
+        return currToken;
+    }
     public static TreeNode parseTree(List<String> rules,List<List<String>> parseTable, List<List<Map.Entry<String, TERMINAL>>> tokens){
         List<Map.Entry<String, TERMINAL>> tokenList=new ArrayList<>();
         for (List<Map.Entry<String,TERMINAL>> t:tokens) {
@@ -67,14 +95,24 @@ public class Parser {
 
         int tokenIndex=0;
         TERMINAL currToken= tokenList.get(tokenIndex).getValue();
+        if (currToken==TERMINAL.ID){
+            String idName=tokenList.get(tokenIndex).getKey();
+            currToken=handleID(idName);
+        }
         List<String> state=parseTable.get(stateIndex(stack));
         String action=state.get(parseTable.get(0).indexOf(currToken.toString()));
         char actionType=actionElement(action);
         int actionIndex = actionIndex(action);
         int step=1;
-        //System.out.printf("[%2d] %-60s %-70s [%3s]\n",step++,stack,tokenList.subList(tokenIndex,tokenList.size()),action);
+        System.out.printf("[%2d] %-60s %-70s [%3s]\n",step++,stack,tokenList.subList(tokenIndex,tokenList.size()),action);
 
         while (!action.equals("acc") ){
+            System.out.println(currToken);
+            if (currToken==TERMINAL.ID){
+
+
+            }
+            System.out.println(currToken);
             if(actionType=='s'){
                 stack.push(tokenList.get(tokenIndex).getKey());
                 stack.push(actionIndex);
@@ -122,7 +160,7 @@ public class Parser {
                 actionType = actionElement(action);
                 actionIndex = actionIndex(action);
             }
-            //System.out.printf("[%2d] %-60s %-70s [%3s]\n",step,stack,tokenList.subList(tokenIndex,tokenList.size()),action);
+            System.out.printf("[%2d] %-60s %-70s [%3s]\n",step,stack,tokenList.subList(tokenIndex,tokenList.size()),action);
         }
         stack.pop();
         Object tree=stack.pop();
