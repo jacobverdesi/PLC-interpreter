@@ -8,7 +8,7 @@ else { print( "Failed" ); }
 if( b <= a + 4 / 2 != 5 ) { accept = concat( accept, "a" ); }
 else { print( "Failed" ); }
 Integer x = 0;
-for( Integer c = 0; c != 5; c = c + 1; ) { x = c >= 4; }
+for( Integer c = 0; c != 5; c = c + 1) { x = c >= 4; }
 if( 2 / 2 == x ) { accept = concat( accept, "s" ); }
 else { print( "Failed" ); }
 Integer y = 5;

@@ -1,4 +1,6 @@
 
+import com.sun.source.tree.Tree;
+
 import java.util.List;
 import java.util.Map;
 
@@ -13,7 +15,7 @@ public class Jott {
 
         List<List<Map.Entry<String, TERMINAL>>> tokens=Tokenizer.dfaTokenizer(prog);
 
-        System.out.println(tokens);
+        //System.out.println(tokens);
 //        Tokenizer.printTokens(tokens);
         Tokenizer.printTerminals(tokens);
 //       //Parser.printTable(matrix);
@@ -22,6 +24,8 @@ public class Jott {
         System.out.println("\nProgram Tree: \n");
         TreeNode tree=Parser.parseTree(rules,matrix,tokens);
         TreeNode.printTree(tree);
+
+        //TreeNode.printTree(tree);
         System.out.println("\nOutput: \n");
 
         TreeInterpreter.runTree(tree);

@@ -308,16 +308,9 @@ public class TreeInterpreter {
     }
 
     public static void runTree(TreeNode tree){
-//        System.out.println();
-//        System.out.println("Tree:");
-//        System.out.println();
-        TreeNode.reverseTree(tree);
-//        System.out.println();
-//        System.out.println("Statements:");
         List<TreeNode> statements = findSTMTS(tree,new ArrayList<>());
         Collections.reverse(statements);
-//        System.out.println(statements+"\n");
-//        System.out.println("OUTPUT");
+        System.out.println(statements+"\n");
         for (TreeNode statement:statements) {
             if (statement.toString().equals("PRINTSTMT")) {
                 handlePrint(statement);

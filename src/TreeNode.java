@@ -1,5 +1,4 @@
 import java.util.*;
-import java.util.function.Consumer;
 
 
 public class TreeNode<T> implements Iterable<TreeNode<T>> {
@@ -14,7 +13,7 @@ public class TreeNode<T> implements Iterable<TreeNode<T>> {
         this.depth=0;
     }
 
-    public TreeNode<T> addChild(T child) {
+    public void addChild(T child) {
         TreeNode<T> childNode = new TreeNode<T>(child);
         childNode.parent = this;
         childNode.depth=depth+1;
@@ -26,7 +25,6 @@ public class TreeNode<T> implements Iterable<TreeNode<T>> {
             }
         }
         this.children.add(children.size(),childNode);
-        return childNode;
     }
     @Override
     public String toString() {
