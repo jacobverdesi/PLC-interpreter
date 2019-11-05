@@ -53,30 +53,27 @@ public class Parser {
         }
         return null;
     }
-    private static TERMINAL handleID(String idName){
-        TERMINAL currToken;
+    private static TERMINAL handleID(TERMINAL currToken,String idName,String identifier){
         boolean found = false;
         for (Map.Entry<String,Object> id:ids) {
             if (id.getKey().equals(idName)) {
-                System.out.println(id);
-                if (id.getValue().equals("Integer")) {
-                    currToken = TERMINAL.INT;
+                if (id.getValue().equals("Integer")){
+                    currToken = TERMINAL.I_ID;
                 } else if (id.getValue().equals("Double")) {
-                    currToken = TERMINAL.DOUBLE;
+                    currToken = TERMINAL.D_ID;
                 } else if (id.getValue().equals("String")) {
-                    currToken = TERMINAL.STRING;
+                    currToken = TERMINAL.S_ID;
                 }
                 found=true;
             }
         }
         if (!found){
-            String identifier = stack.get(stack.size() - 2).toString();
             if(identifier.equals("Integer") || identifier.equals("Double") || identifier.equals("String")) {
                 Map.Entry<String, Object> id = new AbstractMap.SimpleEntry<>(idName, identifier);
                 ids.add(id);
             }
             else{
-                parseError(step,tokenIndex,currToken);
+                return null;
             }
         }
         return currToken;
@@ -92,27 +89,26 @@ public class Parser {
 
         Stack stack=new Stack<>();
         stack.push(0);
-
+        int step=1;
         int tokenIndex=0;
         TERMINAL currToken= tokenList.get(tokenIndex).getValue();
         if (currToken==TERMINAL.ID){
             String idName=tokenList.get(tokenIndex).getKey();
-            currToken=handleID(idName);
+            String identifier = stack.get(stack.size() - 2).toString();
+            TERMINAL temp2=currToken;
+            currToken=handleID(currToken,idName,identifier);
+            if(currToken==null) {
+                parseError(step, tokenIndex, temp2);
+            }
         }
         List<String> state=parseTable.get(stateIndex(stack));
         String action=state.get(parseTable.get(0).indexOf(currToken.toString()));
         char actionType=actionElement(action);
         int actionIndex = actionIndex(action);
-        int step=1;
-        System.out.printf("[%2d] %-60s %-70s [%3s]\n",step++,stack,tokenList.subList(tokenIndex,tokenList.size()),action);
+        //System.out.printf("[%2d] %-60s %-70s [%3s]\n",step++,stack,tokenList.subList(tokenIndex,tokenList.size()),action);
 
         while (!action.equals("acc") ){
-            System.out.println(currToken);
-            if (currToken==TERMINAL.ID){
 
-
-            }
-            System.out.println(currToken);
             if(actionType=='s'){
                 stack.push(tokenList.get(tokenIndex).getKey());
                 stack.push(actionIndex);
@@ -149,6 +145,15 @@ public class Parser {
             state=parseTable.get(stateIndex(stack));
             TERMINAL temp=currToken;
             currToken= tokenList.get(tokenIndex).getValue();
+            if (currToken==TERMINAL.ID) {
+                String idName = tokenList.get(tokenIndex).getKey();
+                String identifier = stack.get(stack.size() - 2).toString();
+                TERMINAL temp2 = currToken;
+                currToken = handleID(currToken,idName, identifier);
+                if (currToken == null) {
+                    parseError(step, tokenIndex, temp2);
+                }
+            }
             if(currToken.equals(TERMINAL.END)&&currToken!=temp) step++;
             if(actionIndex==-1) action=state.get(parseTable.get(0).indexOf(stack.peek().toString()));
             else action=state.get(parseTable.get(0).indexOf(currToken.toString()));
@@ -164,6 +169,7 @@ public class Parser {
         }
         stack.pop();
         Object tree=stack.pop();
+        ids.clear();
         return  (TreeNode) tree;
     }
     public static void main (String args[]){
