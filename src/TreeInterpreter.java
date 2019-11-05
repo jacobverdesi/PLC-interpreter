@@ -6,7 +6,7 @@ public class TreeInterpreter {
         Collections.reverse(tree.children);
         for (Object t: tree.children){
             if(t.toString().equals("STMT")){
-                stmts.add(getSTMTtype((TreeNode) t));
+                stmts.add((TreeNode) t);
             }
             findSTMTS((TreeNode)t,stmts);
         }
@@ -14,6 +14,7 @@ public class TreeInterpreter {
     }
     public static TreeNode getSTMTtype(TreeNode tree) {
         TreeNode stmt=(TreeNode) tree.children.get(0);
+        System.out.println(tree.children);
         if(!stmt.toString().equals("EXPR")){
             return stmt;
         }
@@ -308,21 +309,44 @@ public class TreeInterpreter {
     }
 
     public static void runTree(TreeNode tree){
+        System.out.println(tree.children);
         List<TreeNode> statements = findSTMTS(tree,new ArrayList<>());
         Collections.reverse(statements);
         System.out.println(statements+"\n");
         for (TreeNode statement:statements) {
-            if (statement.toString().equals("PRINTSTMT")) {
-                handlePrint(statement);
-            } else if (statement.toString().equals("EXPR")) {
+            Collections.reverse(statement.children);
+            System.out.println(statement+"   "+statement.children);
+            if (statement.children.get(0).toString().equals("PRINTSTMT")) {
+                handlePrint((TreeNode) statement.children.get(0));
+            } else if (statement.children.get(0).toString().equals("ASMT")) {
+                handleAsmt((TreeNode) statement.children.get(0));
+            } else if (statement.children.get(0).toString().equals("REASMT")) {
+                handleReasmt((TreeNode) statement.children.get(0));
+            } else if (statement.children.get(0).toString().equals("EXPR")) {
                 handleExpr((TreeNode) statement.children.get(0));
-            } else if (statement.toString().equals("DOUBLEASMT")) {
-                handleDOUBLEasmt(statement);
-            } else if (statement.toString().equals("INTASMT")) {
-                handleINTasmt(statement);
-            } else if (statement.toString().equals("STRASMT")) {
-                handleSTRasmt(statement);
+            } else if (statement.children.get(0).toString().equals("if")&& statement.children.get(7).toString().equals("else")) {
+                handleIf((TreeNode) statement.children.get(2),(TreeNode) statement.children.get(5));
+                handleElse((TreeNode) statement.children.get(9));
+            } else if (statement.children.get(0).toString().equals("if")){
+                handleIf((TreeNode) statement.children.get(2),(TreeNode) statement.children.get(5));
+            }else if (statement.children.get(0).toString().equals("for")){
+                handleFor((TreeNode) statement.children.get(2),(TreeNode) statement.children.get(5));
+            }else if (statement.children.get(0).toString().equals("while")){
+                handleIf((TreeNode) statement.children.get(2),(TreeNode) statement.children.get(5));
             }
+
+
+//                handleAsmt(statement);
+//            } else if (statement.toString().equals("IF")) {
+//                handleAsmt(statement);
+//            } else if (statement.toString().equals("WHILE")) {
+//                handleAsmt(statement);
+//            } else if (statement.toString().equals("FOR")) {
+//                handleAsmt(statement);
+//            }
+
+
+
         }
     }
 }

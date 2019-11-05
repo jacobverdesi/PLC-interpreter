@@ -11,6 +11,7 @@ public class Jott {
             System.out.println("\nprog"+i+".j tree:");
             System.out.println("================");
             List<List<Map.Entry<String, TERMINAL>>> tokens=Tokenizer.dfaTokenizer(prog);
+            System.out.println("Tokenized");
             TreeNode tree=Parser.parseTree(rules,matrix,tokens);
             TreeNode.printTree(tree);
 
@@ -23,23 +24,15 @@ public class Jott {
         List<String> table = FileReader.readFile("LALR(1) parse table");
         List<String> rules = FileReader.readFile("Grammar2");
         List<List<String>> matrix = Parser.parseTable(table);
-        List<Integer> progs=List.of(0,1,2,4,5,6,10,11,12,13,14,15,16,17);
-        testProgs(progs,rules,matrix);
-        //List<List<Map.Entry<String, TERMINAL>>> tokens=Tokenizer.dfaTokenizer(prog);
+        //List<Integer> progs=List.of(0,1,2,4,5,6,10,11,13,14,15,17);
+        //testProgs(progs,rules,matrix);
+        List<List<Map.Entry<String, TERMINAL>>> tokens=Tokenizer.dfaTokenizer(prog);
 
-        //System.out.println(tokens);
-//        Tokenizer.printTokens(tokens);
-        //Tokenizer.printTerminals(tokens);
-//       //Parser.printTable(matrix);
-//
-       // List<String> prog = FileReader.readFile("tests/prog8.j");
-//        System.out.println("\nProgram Tree: \n");
-//        TreeNode tree=Parser.parseTree(rules,matrix,tokens);
-//        TreeNode.printTree(tree);
-//
-//        //TreeNode.printTree(tree);
-//        System.out.println("\nOutput: \n");
-//
-//        TreeInterpreter.runTree(tree);
+        System.out.println("\nProgram Tree: \n");
+        TreeNode tree=Parser.parseTree(rules,matrix,tokens);
+        TreeNode.printTree(tree);
+
+        System.out.println("\nOutput: \n");
+        TreeInterpreter.runTree(tree);
     }
 }

@@ -165,7 +165,7 @@ public class Parser {
                 actionType = actionElement(action);
                 actionIndex = actionIndex(action);
             }
-            System.out.printf("[%2d] %-60s %-70s [%3s]\n",step,stack,tokenList.subList(tokenIndex,tokenList.size()),action);
+            //System.out.printf("[%2d] %-60s %-70s [%3s]\n",step,stack,tokenList.subList(tokenIndex,tokenList.size()),action);
         }
         stack.pop();
         Object tree=stack.pop();
