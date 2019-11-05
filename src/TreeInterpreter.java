@@ -21,56 +21,19 @@ public class TreeInterpreter {
         return stmt;
     }
     public static void handlePrint(TreeNode tree){
+        Collections.reverse(tree.children);
         TreeNode expr= (TreeNode) tree.children.get(2);
         Object exp= handleExpr((TreeNode) expr.children.get(0));
         System.out.println(exp);
     }
     public static void handleAsmt(TreeNode tree){
         TreeNode expr= (TreeNode) tree.children.get(0);
-        if(expr.toString().equals("INTASMT")){
-            handleIntAsmt(expr);
-        } else if(expr.toString().equals("DOUBLEASMT")){
-            handleDoubleAsmt(expr);
-        } else if(expr.toString().equals("STRASMT")){
-            handleStrAsmt(expr);
-        }
-    }
-    public static void handleIntAsmt(TreeNode treeNode){
-        List child=treeNode.children;
+        List child=expr.children;
         Collections.reverse(child);
-        for (Map.Entry<String,Object> id:ids) {
-            if(id.getKey().equals(child.get(1).toString())){
-                id.setValue(handleExpr((TreeNode) treeNode.children.get(3)));
-                return;
-            }
-        }
-        Map.Entry<String,Object> id=new AbstractMap.SimpleEntry<>(child.get(1).toString(),(int)handleExpr((TreeNode) treeNode.children.get(3)));
+        Map.Entry<String,Object> id=new AbstractMap.SimpleEntry<>(child.get(1).toString(), handleExpr((TreeNode) child.get(3)));
         ids.add(id);
     }
-    public static void handleDoubleAsmt(TreeNode treeNode){
-        List child=treeNode.children;
-        Collections.reverse(child);
-        for (Map.Entry<String,Object> id:ids) {
-            if(id.getKey().equals(child.get(1).toString())){
-                id.setValue(handleExpr((TreeNode) treeNode.children.get(3)));
-                return;
-            }
-        }
-        Map.Entry<String,Object> id=new AbstractMap.SimpleEntry<>(child.get(1).toString(),handleExpr((TreeNode) treeNode.children.get(3)));
-        ids.add(id);
-    }
-    public static void handleStrAsmt(TreeNode treeNode){
-        List child=treeNode.children;
-        Collections.reverse(child);
-        for (Map.Entry<String,Object> id:ids) {
-            if(id.getKey().equals(child.get(1).toString())){
-                id.setValue(handleExpr((TreeNode) treeNode.children.get(3)));
-                return;
-            }
-        }
-        Map.Entry<String,Object> id=new AbstractMap.SimpleEntry<>(child.get(1).toString(),handleExpr((TreeNode) treeNode.children.get(3)));
-        ids.add(id);
-    }
+
     public static void handleReasmt(TreeNode tree){
 
     }
@@ -137,7 +100,7 @@ public class TreeInterpreter {
             return handleStringExpr(exprType);
         }
         else {
-            return handleID(exprType);
+            return null;
         }
     }
     public static void handleIf(TreeNode i_expr,TreeNode b_stmtls){
@@ -156,168 +119,77 @@ public class TreeInterpreter {
         List child=treeNode.children;
         Collections.reverse(child);
         List<String> expr=new ArrayList<>();
-        if(child.size()==2&&child.get(1).toString().equals("D_EXPR2")){
-            Object value=handleID((TreeNode) child.get(0));
-            try{
-                double idValue=(double)(value);
-                expr.add(""+idValue);
-            }
-            catch(ClassCastException ex) {
-                System.err.format("Syntax Error: Type mismatch: Expected Double got: "+handleID((TreeNode) child.get(0)).getClass().getSimpleName());
-                System.exit(0);
-            }
+        if(child.get(0).toString().equals("SIGN")){
+            String sign=handleSign((TreeNode) child.get(0));
+            double value=Double.parseDouble(child.get(1).toString());
+            if(sign.equals("-")) value=value*-1;
+            expr.add(""+value);
+            expr.addAll(handleDoubleExpr2((TreeNode) child.get(2)));
+        } else if(child.size()==2&&child.get(1).toString().equals("D_EXPR2")){
+            expr.add(""+handleID((TreeNode) child.get(0)));
             expr.addAll(handleDoubleExpr2((TreeNode) child.get(1)));
-        }
-        else if(child.size()==2&&child.get(0).toString().equals("SIGN")){
-            if(handleSign((TreeNode)child.get(0)).equals("-")) {
-                expr.add("" + (Double.parseDouble(child.get(1).toString()) * -1));
-            }
-            else expr.add(child.get(1).toString());
-        }
-        else if(child.size()==5&&child.get(3).toString().equals("SIGN")){
-            if(handleSign((TreeNode)child.get(0)).equals("-")) {
-                expr.add("" + (Double.parseDouble(child.get(1).toString()) * -1));
-            }
-            else{
-                expr.add(child.get(1).toString());
-            }
-            expr.add(handleOperation((TreeNode)child.get(2)));
-            if(handleSign((TreeNode)child.get(3)).equals("-")) {
-                expr.add("" + (Double.parseDouble(child.get(4).toString()) * -1));
-            }
-            else{
-                expr.add(child.get(4).toString());
-            }
-
-        }
-        else if(child.size()==4&&child.get(3).toString().equals("D_EXPR")){
-            if(handleSign((TreeNode)child.get(0)).equals("-")) {
-                expr.add("" + (Double.parseDouble(child.get(1).toString()) * -1));
-            }
-            else{
-                expr.add(child.get(1).toString());
-            }
-            expr.add(handleOperation((TreeNode)child.get(2)));
-            expr.addAll(handleDoubleExpr((TreeNode) child.get(3)));
-        }
-        else if(child.size()==3&&child.get(0).toString().equals("D_EXPR")){
-            expr.addAll(handleDoubleExpr((TreeNode) child.get(0)));
-            expr.add(handleOperation((TreeNode)child.get(1)));
-            expr.addAll(handleDoubleExpr((TreeNode) child.get(2)));
-        }
-        else {
-            System.err.println("Not suppose to be here");
-            System.exit(0);
         }
         return expr;
     }
     public static List<String> handleDoubleExpr2(TreeNode treeNode){
-        List<TreeNode> child=treeNode.children;
+        List child=treeNode.children;
         Collections.reverse(child);
         List<String> expr=new ArrayList<>();
-        if(child.size()==3){
-            expr.add(handleOperation(child.get(0)));
-            expr.addAll(handleDoubleExpr(child.get(1)));
-            expr.addAll(handleDoubleExpr2(child.get(2)));
+        if(child.size()==2){
+            expr.add(handleOperation((TreeNode) child.get(0)));
+            expr.addAll(handleDoubleExpr((TreeNode) child.get(1)));
         }
         return expr;
     }
-
-
     public static List<String> handleIntegerExpr(TreeNode treeNode){
         List child=treeNode.children;
         Collections.reverse(child);
         List<String> expr=new ArrayList<>();
-        if(child.size()==2&&child.get(1).toString().equals("I_EXPR2")){
-            Object value=handleID((TreeNode) child.get(0));
-            try{
-                int idValue=(int)(value);
-                expr.add(""+idValue);
-            }
-            catch(ClassCastException ex) {
-                System.err.format("Type mismatch: Expected Integer got: "+handleID((TreeNode) child.get(0)).getClass().getSimpleName());
-                System.exit(0);
-            }
-            expr.addAll(handleIntegerExpr2((TreeNode) child.get(1)));
-        }
-        else if(child.size()==2&&child.get(0).toString().equals("SIGN")){
-            if(handleSign((TreeNode)child.get(0)).equals("-")) {
-                expr.add("" + (Integer.parseInt(child.get(1).toString()) * -1));
-            }
-            else expr.add(child.get(1).toString());
-        }
-        else if(child.size()==5&&child.get(3).toString().equals("SIGN")){
-            if(handleSign((TreeNode)child.get(0)).equals("-")) {
-                expr.add("" + (Integer.parseInt(child.get(1).toString()) * -1));
-            }
-            else{
-                expr.add(child.get(1).toString());
-            }
-            expr.add(handleOperation((TreeNode)child.get(2)));
-            if(handleSign((TreeNode)child.get(3)).equals("-")) {
-                expr.add("" + (Integer.parseInt(child.get(4).toString()) * -1));
-            }
-            else{
-                expr.add(child.get(4).toString());
-            }
+        if(child.get(0).toString().equals("B_EXPR")){
 
-        }
-        else if(child.size()==4&&child.get(3).toString().equals("I_EXPR")){
-            if(handleSign((TreeNode)child.get(0)).equals("-")) {
-                expr.add("" + (Integer.parseInt(child.get(1).toString()) * -1));
-            }
-            else{
-                expr.add(child.get(1).toString());
-            }
-            expr.add(handleOperation((TreeNode)child.get(2)));
-            expr.addAll(handleIntegerExpr((TreeNode) child.get(3)));
-        }
-        else if(child.size()==3&&child.get(0).toString().equals("I_EXPR")){
-            expr.addAll(handleIntegerExpr((TreeNode) child.get(0)));
-            expr.add(handleOperation((TreeNode)child.get(1)));
-            expr.addAll(handleIntegerExpr((TreeNode) child.get(2)));
+        } else if(child.get(0).toString().equals("SIGN")){
+            String sign=handleSign((TreeNode) child.get(0));
+            int value=Integer.parseInt(child.get(1).toString());
+            if(sign.equals("-")) value=value*-1;
+            expr.add(""+value);
+            expr.addAll(handleIntegerExpr2((TreeNode) child.get(2)));
+        } else if(child.size()==2&&child.get(1).toString().equals("I_EXPR2")){
+            expr.add(""+handleID((TreeNode) child.get(0)));
+            expr.addAll(handleIntegerExpr2((TreeNode) child.get(1)));
         }
         return expr;
     }
     public static List<String> handleIntegerExpr2(TreeNode treeNode){
-        List<TreeNode> child=treeNode.children;
+        List child=treeNode.children;
         Collections.reverse(child);
         List<String> expr=new ArrayList<>();
-        if(child.size()==3){
-            expr.add(handleOperation(child.get(0)));
-            expr.addAll(handleIntegerExpr(child.get(1)));
-            expr.addAll(handleIntegerExpr2(child.get(2)));
+        if(child.size()==2){
+            expr.add(handleOperation((TreeNode) child.get(0)));
+            expr.addAll(handleIntegerExpr((TreeNode) child.get(1)));
         }
         return expr;
     }
     public static String handleStringExpr(TreeNode treeNode){
-        List<TreeNode> child=treeNode.children;
+        List child=treeNode.children;
         Collections.reverse(child);
-
         if (child.get(0).toString().charAt(0)=='\"'){
             return child.get(0).toString().substring(1,child.get(0).toString().length()-1);
         }
         else if(child.size()==1) {
-            Object value=handleID(child.get(0));
+            Object value=handleID((TreeNode) child.get(0));
             return (String) value;
         }
         else if (child.get(0).toString().equals("concat")){
-            return handleStringExpr(child.get(2))+handleStringExpr(child.get(4));
+            return handleStringExpr((TreeNode) child.get(2))+handleStringExpr((TreeNode) child.get(4));
         }
         else if (child.get(0).toString().equals("charAt")){
-            String s=handleStringExpr(child.get(2));
-            int index= (int) handleExpr(child.get(4));
-            return s.charAt(index)+"";
-        }
-        return null;
-    }
-    public static String handleSign(TreeNode treeNode){
-        if(treeNode.children.size()!=0) {
-            return treeNode.children.get(0).toString().equals("-") ? "-" : "";
+            return handleStringExpr((TreeNode)child.get(2)).charAt((int) handleExpr((TreeNode)child.get(4)))+"";
         }
         return "";
     }
-
+    public static String handleSign(TreeNode treeNode){
+            return treeNode.children.size()!=0&&treeNode.children.get(0).toString().equals("-") ? "-" : "";
+    }
     public static String handleOperation(TreeNode treeNode){
         return treeNode.children.get(0).toString();
     }
@@ -329,17 +201,15 @@ public class TreeInterpreter {
             }
         }
         System.err.format("Undeclared Variable:%s",id);
+        System.exit(0);
         return null;
     }
-
 
     public static void runTree(TreeNode tree){
         List<TreeNode> statements = findSTMTS(tree,new ArrayList<>());
         Collections.reverse(statements);
-        System.out.println(statements+"\n");
         for (TreeNode statement:statements) {
             Collections.reverse(statement.children);
-            System.out.println(statement+"   "+statement.children);
             if (statement.children.get(0).toString().equals("PRINTSTMT")) {
                 handlePrint((TreeNode) statement.children.get(0));
             } else if (statement.children.get(0).toString().equals("ASMT")) {
@@ -347,8 +217,8 @@ public class TreeInterpreter {
             } else if (statement.children.get(0).toString().equals("REASMT")) {
                 handleReasmt((TreeNode) statement.children.get(0));
             } else if (statement.children.get(0).toString().equals("EXPR")) {
-                handleExpr((TreeNode) statement.children.get(0));
-            } else if (statement.children.get(0).toString().equals("if")&& statement.children.get(7).toString().equals("else")) {
+                handleExpr((TreeNode) ((TreeNode)statement.children.get(0)).children.get(0));
+            } else if (statement.children.get(0).toString().equals("if")&& statement.children.size()== 11 && statement.children.get(7).toString().equals("else")) {
                 handleIfElse((TreeNode) statement.children.get(2),(TreeNode) statement.children.get(5),(TreeNode) statement.children.get(9));
             } else if (statement.children.get(0).toString().equals("if")){
                 handleIf((TreeNode) statement.children.get(2),(TreeNode) statement.children.get(5));
