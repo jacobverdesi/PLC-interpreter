@@ -356,19 +356,6 @@ public class TreeInterpreter {
             }else if (statement.children.get(0).toString().equals("while")){
                 handleWhile((TreeNode) statement.children.get(2),(TreeNode) statement.children.get(5));
             }
-
-
-//                handleAsmt(statement);
-//            } else if (statement.toString().equals("IF")) {
-//                handleAsmt(statement);
-//            } else if (statement.toString().equals("WHILE")) {
-//                handleAsmt(statement);
-//            } else if (statement.toString().equals("FOR")) {
-//                handleAsmt(statement);
-//            }
-
-
-
         }
     }
 }
