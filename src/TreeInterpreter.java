@@ -25,7 +25,17 @@ public class TreeInterpreter {
         Object exp= handleExpr((TreeNode) expr.children.get(0));
         System.out.println(exp);
     }
-    public static void handleINTasmt(TreeNode treeNode){
+    public static void handleAsmt(TreeNode tree){
+        TreeNode expr= (TreeNode) tree.children.get(0);
+        if(expr.toString().equals("INTASMT")){
+            handleIntAsmt(expr);
+        } else if(expr.toString().equals("DOUBLEASMT")){
+            handleDoubleAsmt(expr);
+        } else if(expr.toString().equals("STRASMT")){
+            handleStrAsmt(expr);
+        }
+    }
+    public static void handleIntAsmt(TreeNode treeNode){
         List child=treeNode.children;
         Collections.reverse(child);
         for (Map.Entry<String,Object> id:ids) {
@@ -37,7 +47,7 @@ public class TreeInterpreter {
         Map.Entry<String,Object> id=new AbstractMap.SimpleEntry<>(child.get(1).toString(),(int)handleExpr((TreeNode) treeNode.children.get(3)));
         ids.add(id);
     }
-    public static void handleDOUBLEasmt(TreeNode treeNode){
+    public static void handleDoubleAsmt(TreeNode treeNode){
         List child=treeNode.children;
         Collections.reverse(child);
         for (Map.Entry<String,Object> id:ids) {
@@ -49,7 +59,7 @@ public class TreeInterpreter {
         Map.Entry<String,Object> id=new AbstractMap.SimpleEntry<>(child.get(1).toString(),handleExpr((TreeNode) treeNode.children.get(3)));
         ids.add(id);
     }
-    public static void handleSTRasmt(TreeNode treeNode){
+    public static void handleStrAsmt(TreeNode treeNode){
         List child=treeNode.children;
         Collections.reverse(child);
         for (Map.Entry<String,Object> id:ids) {
@@ -60,9 +70,11 @@ public class TreeInterpreter {
         }
         Map.Entry<String,Object> id=new AbstractMap.SimpleEntry<>(child.get(1).toString(),handleExpr((TreeNode) treeNode.children.get(3)));
         ids.add(id);
+    }
+    public static void handleReasmt(TreeNode tree){
+
     }
     public static Object handleExpr(TreeNode exprType){
-
         if (exprType.toString().equals("I_EXPR")) {
             List<String> i_exp=handleIntegerExpr(exprType);
             int rh=Integer.parseInt(i_exp.get(0));
@@ -127,6 +139,18 @@ public class TreeInterpreter {
         else {
             return handleID(exprType);
         }
+    }
+    public static void handleIf(TreeNode i_expr,TreeNode b_stmtls){
+
+    }
+    public static void handleIfElse(TreeNode i_expr,TreeNode b_stmtls,TreeNode b_stmtls2){
+
+    }
+    public static void handleWhile(TreeNode i_expr,TreeNode b_stmtls){
+
+    }
+    public static void handleFor(TreeNode asmt,TreeNode i_expr,TreeNode reasmt,TreeNode b_stmtls){
+
     }
     public static List<String> handleDoubleExpr(TreeNode treeNode){
         List child=treeNode.children;
@@ -309,7 +333,6 @@ public class TreeInterpreter {
     }
 
     public static void runTree(TreeNode tree){
-        System.out.println(tree.children);
         List<TreeNode> statements = findSTMTS(tree,new ArrayList<>());
         Collections.reverse(statements);
         System.out.println(statements+"\n");
@@ -325,14 +348,13 @@ public class TreeInterpreter {
             } else if (statement.children.get(0).toString().equals("EXPR")) {
                 handleExpr((TreeNode) statement.children.get(0));
             } else if (statement.children.get(0).toString().equals("if")&& statement.children.get(7).toString().equals("else")) {
-                handleIf((TreeNode) statement.children.get(2),(TreeNode) statement.children.get(5));
-                handleElse((TreeNode) statement.children.get(9));
+                handleIfElse((TreeNode) statement.children.get(2),(TreeNode) statement.children.get(5),(TreeNode) statement.children.get(9));
             } else if (statement.children.get(0).toString().equals("if")){
                 handleIf((TreeNode) statement.children.get(2),(TreeNode) statement.children.get(5));
             }else if (statement.children.get(0).toString().equals("for")){
-                handleFor((TreeNode) statement.children.get(2),(TreeNode) statement.children.get(5));
+                handleFor((TreeNode) statement.children.get(2),(TreeNode) statement.children.get(3),(TreeNode) statement.children.get(5),(TreeNode) statement.children.get(8));
             }else if (statement.children.get(0).toString().equals("while")){
-                handleIf((TreeNode) statement.children.get(2),(TreeNode) statement.children.get(5));
+                handleWhile((TreeNode) statement.children.get(2),(TreeNode) statement.children.get(5));
             }
 
 
