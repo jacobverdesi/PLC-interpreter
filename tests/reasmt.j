@@ -1,0 +1,14 @@
+Integer j=0;
+print(j);
+j=40;
+print(j);
+j=j*10;
+print(j);
+j=j*1;
+Double k=0.0;
+print(k);
+k=1.2;
+print(k);
+k=k*1.5;
+print(k);
+k=k*1.1;
