@@ -48,32 +48,9 @@ public class TreeInterpreter {
     public static Object handleExpr(TreeNode exprType){
         if (exprType.toString().equals("I_EXPR")) {
             List<String> i_exp=handleIntegerExpr(exprType);
-            System.out.println(i_exp);
-
-            int lh = 0;
-            int i=0;
-            try {
-                lh = Integer.parseInt(i_exp.get(0));
-                i=1;
-            }catch (NumberFormatException ex){
-
-            }
-
-
-            for(;i<i_exp.size();i+=2){
-
-                lh=evalI_Expr(lh,op,rh);
-                if(i==0){
-
-                }
-                int compare
-                try {
-                    compare = (lh + "").compareTo(i_exp.get(i + 1) + "");
-                }catch (NumberFormatException ex){
-                    compare = (i_exp + "").compareTo(i_exp.get(i + 1) + "");
-
-                }
-
+            int lh = Integer.parseInt(i_exp.get(0));
+            for(int i=1;i<i_exp.size();i+=2){
+                int compare = (lh + "").compareTo(i_exp.get(i + 1) + "");
                 switch (i_exp.get(i)){
                     case "+": lh=lh + Integer.parseInt(i_exp.get(i+1));break;
                     case "-": lh=lh - Integer.parseInt(i_exp.get(i+1));break;
@@ -167,27 +144,43 @@ public class TreeInterpreter {
         Collections.reverse(child);
         List<String> expr=new ArrayList<>();
         if(child.get(0).toString().equals("B_EXPR")){
-            expr.addAll(handleBooleanExpr((TreeNode)child.get(0)));
-        } else if(child.get(0).toString().equals("SIGN")){
-            String sign=handleSign((TreeNode) child.get(0));
-            int value=Integer.parseInt(child.get(1).toString());
-            if(sign.equals("-")) value=value*-1;
-            expr.add(""+value);
-            expr.addAll(handleIntegerExpr2((TreeNode) child.get(2)));
-        } else if(child.size()==2&&child.get(1).toString().equals("I_EXPR2")){
-            expr.add(""+handleID((TreeNode) child.get(0)));
-            expr.addAll(handleIntegerExpr2((TreeNode) child.get(1)));
+            expr.add(handleBooleanExpr((TreeNode)child.get(0))+"");
+            expr.addAll(handleIntegerExpr3((TreeNode)child.get(1)));
+        } else if(child.get(0).toString().equals("I_EXPR2")){
+            expr.addAll(handleIntegerExpr2((TreeNode) child.get(0)));
+            expr.addAll(handleIntegerExpr3((TreeNode)child.get(1)));
+
         }
-        //System.out.println("EXPR: "+expr);
         return expr;
     }
     public static List<String> handleIntegerExpr2(TreeNode treeNode){
         List child=treeNode.children;
         Collections.reverse(child);
         List<String> expr=new ArrayList<>();
+
+        if(child.get(0).toString().equals("SIGN")){
+            String sign=handleSign((TreeNode) child.get(0));
+            int value=Integer.parseInt(child.get(1).toString());
+            if(sign.equals("-")) value=value*-1;
+            expr.add(""+value);
+        }
+        else if(child.size()==1){
+            expr.add(handleID((TreeNode) child.get(0)).toString());
+        }
+        else if(child.get(0).toString().equals("I_EXPR2")){
+            expr.addAll(handleIntegerExpr2((TreeNode)child.get(0)));
+            expr.add(((TreeNode)child.get(1)).children.get(0).toString());
+            expr.addAll(handleIntegerExpr2((TreeNode)child.get(2)));
+        }
+        return expr;
+    }
+    public static List<String> handleIntegerExpr3(TreeNode treeNode){
+        List child=treeNode.children;
+        Collections.reverse(child);
+        List<String> expr=new ArrayList<>();
         if(child.size()==2){
             expr.add(handleOperation((TreeNode) child.get(0)));
-            expr.addAll(handleIntegerExpr((TreeNode) child.get(1)));
+            expr.addAll(handleIntegerExpr2((TreeNode) child.get(1)));
         }
         return expr;
     }
@@ -204,32 +197,42 @@ public class TreeInterpreter {
         else if (child.get(0).toString().equals("concat")){
             return handleStringExpr((TreeNode) child.get(2))+handleStringExpr((TreeNode) child.get(4));
         }
-        else if (child.get(0).toString().equals("charAt")){
+        else if (child.get(0).toString().equals("`charAt")){
             return handleStringExpr((TreeNode)child.get(2)).charAt((int) handleExpr((TreeNode)child.get(4)))+"";
         }
         return "";
     }
-    public static List<String> handleBooleanExpr(TreeNode treeNode){
+    public static int handleBooleanExpr(TreeNode treeNode){
         List child=treeNode.children;
         Collections.reverse(child);
         List<String> expr=new ArrayList<>();
-        if(child.get(0).toString().equals("I_EXPR")){
-            expr.addAll(handleIntegerExpr((TreeNode) child.get(0)));
-            expr.add(((TreeNode)child.get(1)).children.get(0).toString());
-            expr.addAll(handleIntegerExpr((TreeNode) child.get(2)));
+        int compare;
+        if(child.get(0).toString().equals("S_EXPR")){
+            compare = (handleStringExpr((TreeNode) child.get(0))).compareTo(handleStringExpr((TreeNode) child.get(2)));
+        }
+        else{
+            double lh= (double) handleExpr((TreeNode) child.get(0));
+            double rh ;
+            if(child.size()==3) {
+                rh = (double) handleID((TreeNode) child.get(2));
+            }
+            else {
+                String sign=handleSign((TreeNode) child.get(2));
+                rh=Double.parseDouble(child.get(3).toString());
+                if(sign.equals("-")) rh=rh*-1;
+            }
+            compare = (lh + "").compareTo(rh+ "");
 
         }
-        else if(child.get(0).toString().equals("D_EXPR")){
-            expr.addAll(handleDoubleExpr((TreeNode) child.get(0)));
-            expr.add(((TreeNode)child.get(1)).children.get(0).toString());
-            expr.addAll(handleDoubleExpr((TreeNode) child.get(2)));
+        switch (((TreeNode)child.get(1)).children.get(0).toString()) {
+            case "<": return ((compare < 0) ? 1 : 0);
+            case ">": return ((compare > 0) ? 1 : 0);
+            case "==": return ((compare == 0) ? 1 : 0);
+            case "!=": return ((compare != 0) ? 1 : 0);
+            case "<=": return ((compare <= 0) ? 1 : 0);
+            case ">=": return ((compare >= 0) ? 1 : 0);
         }
-        else if(child.get(0).toString().equals("S_EXPR")){
-            expr.add(handleStringExpr((TreeNode) child.get(0)));
-            expr.add(((TreeNode)child.get(1)).children.get(0).toString());
-            expr.add(handleStringExpr((TreeNode) child.get(2)));
-        }
-        return  expr;
+        return 0;
     }
     public static String handleSign(TreeNode treeNode){
             return treeNode.children.size()!=0&&treeNode.children.get(0).toString().equals("-") ? "-" : "";
