@@ -36,6 +36,7 @@ public class TreeInterpreter {
             }
         }
     }
+
     public static void handlePrint(TreeNode tree){
         Collections.reverse(tree.children);
         TreeNode expr= (TreeNode) tree.children.get(2);
