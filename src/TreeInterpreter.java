@@ -14,6 +14,28 @@ public class TreeInterpreter {
         }
         return stmts;
     }
+    public static List<TreeNode> findB_STMTS(TreeNode tree,List<TreeNode> stmts){
+        for (Object t: tree.children){
+            if(t.toString().equals("B_STMT")){
+                stmts.add((TreeNode) t);
+            }
+            findB_STMTS((TreeNode)t,stmts);
+        }
+        return stmts;
+    }
+    public static void handleB_STMT(TreeNode tree){
+        List<TreeNode> statements = findB_STMTS(tree,new ArrayList<>());
+        Collections.reverse(statements);
+        for (TreeNode statement:statements) {
+            if (statement.children.get(0).toString().equals("PRINTSTMT")) {
+                handlePrint((TreeNode) statement.children.get(0));
+            } else if (statement.children.get(0).toString().equals("REASMT")) {
+                handleReasmt((TreeNode) statement.children.get(0));
+            } else if (statement.children.get(0).toString().equals("EXPR")) {
+                handleExpr((TreeNode) ((TreeNode)statement.children.get(0)).children.get(0));
+            }
+        }
+    }
     public static void handlePrint(TreeNode tree){
         Collections.reverse(tree.children);
         TreeNode expr= (TreeNode) tree.children.get(2);
@@ -30,14 +52,19 @@ public class TreeInterpreter {
 
     public static void handleReasmt(TreeNode tree){
         List child=tree.children;
-        Collections.reverse(child);
+        if(child.get(0).toString().substring(1).equals("_EXPR")){
+            Collections.reverse(child);
+        }
         int index=-1;
+        System.out.println(child);
         for (Map.Entry<String,Object> o:ids ) {
             if(o.getKey().equals(child.get(0).toString())){
                 index=ids.indexOf(o);
             }
         }
+        System.out.println(index);
         if(index!=-1) {
+            System.out.println(handleExpr((TreeNode) child.get(2)));
             ids.get(index).setValue(handleExpr((TreeNode) child.get(2)));
         }
         else {
@@ -101,14 +128,23 @@ public class TreeInterpreter {
             return null;
         }
     }
-    public static void handleIf(TreeNode i_expr,TreeNode b_stmtls){
-
+    public static void handleIf(TreeNode expr,TreeNode b_stmtls){
+        if(!handleExpr(expr).equals(0)){
+            handleB_STMT(b_stmtls);
+        }
     }
-    public static void handleIfElse(TreeNode i_expr,TreeNode b_stmtls,TreeNode b_stmtls2){
-
+    public static void handleIfElse(TreeNode expr,TreeNode b_stmtls,TreeNode b_stmtls2){
+        if(!handleExpr(expr).equals(0)){
+            handleB_STMT(b_stmtls);
+        }
+        else {
+            handleB_STMT(b_stmtls2);
+        }
     }
     public static void handleWhile(TreeNode i_expr,TreeNode b_stmtls){
-
+        while (!handleExpr(i_expr).equals(0)){
+            handleB_STMT(b_stmtls);
+        }
     }
     public static void handleFor(TreeNode asmt,TreeNode i_expr,TreeNode reasmt,TreeNode b_stmtls){
 
@@ -141,6 +177,8 @@ public class TreeInterpreter {
     }
     public static List<String> handleIntegerExpr(TreeNode treeNode){
         List child=treeNode.children;
+
+
         Collections.reverse(child);
         List<String> expr=new ArrayList<>();
         if(child.get(0).toString().equals("B_EXPR")){
@@ -205,7 +243,6 @@ public class TreeInterpreter {
     public static int handleBooleanExpr(TreeNode treeNode){
         List child=treeNode.children;
         Collections.reverse(child);
-        List<String> expr=new ArrayList<>();
         int compare;
         if(child.get(0).toString().equals("S_EXPR")){
             compare = (handleStringExpr((TreeNode) child.get(0))).compareTo(handleStringExpr((TreeNode) child.get(2)));
