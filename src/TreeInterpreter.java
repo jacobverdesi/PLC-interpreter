@@ -141,6 +141,11 @@ public class TreeInterpreter {
 
     }
     public static void handleFor(TreeNode asmt,TreeNode i_expr,TreeNode reasmt,TreeNode b_stmtls){
+        handleAsmt(asmt);
+        while ((int)handleExpr(i_expr)!=0){
+            handleB_STMT(b_stmtls);
+            handleReasmt(reasmt);
+        }
 
     }
     public static List<String> handleDoubleExpr(TreeNode treeNode){
