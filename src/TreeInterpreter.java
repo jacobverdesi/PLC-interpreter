@@ -137,11 +137,7 @@ public class TreeInterpreter {
     public static void handleWhile(TreeNode i_expr,TreeNode b_stmtls){
         while ((int)handleExpr(i_expr)!=0){
             handleB_STMT(b_stmtls);
-//            System.out.println(ids);
-//            System.out.println((int)ids.get(0).getValue()<10);
         }
-        //System.out.println("I_EXPR: "+handleExpr(i_expr));
-        //System.out.println((int)ids.get(0).getValue()<10);
 
     }
     public static void handleFor(TreeNode asmt,TreeNode i_expr,TreeNode reasmt,TreeNode b_stmtls){

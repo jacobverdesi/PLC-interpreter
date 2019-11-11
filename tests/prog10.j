@@ -1,4 +1,6 @@
-print(3);
-print( 3);
-print(3 );
-print( 3 );
+Integer x = 5;
+print( x );
+x = 8;
+print( x );
+x = "foobar";
+print( x );
