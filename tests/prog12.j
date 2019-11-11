@@ -11,5 +11,5 @@ y = 4.6;
 print( y );
 String z = "Hello";
 print( z );
-String z = "Goodbye";
+z = "Goodbye";
 print( z );

@@ -5,7 +5,6 @@ import java.util.*;
 public class TreeInterpreter {
     private static List<Map.Entry<String,Object>> ids= new ArrayList<>();
     public static List<TreeNode> findSTMTS(TreeNode tree,List<TreeNode> stmts){
-        Collections.reverse(tree.children);
         for (Object t: tree.children){
             if(t.toString().equals("STMT")){
                 stmts.add((TreeNode) t);
@@ -25,7 +24,6 @@ public class TreeInterpreter {
     }
     public static void handleB_STMT(TreeNode tree){
         List<TreeNode> statements = findB_STMTS(tree,new ArrayList<>());
-        Collections.reverse(statements);
         for (TreeNode statement:statements) {
             if (statement.children.get(0).toString().equals("PRINTSTMT")) {
                 handlePrint((TreeNode) statement.children.get(0));
@@ -38,7 +36,6 @@ public class TreeInterpreter {
     }
 
     public static void handlePrint(TreeNode tree){
-        Collections.reverse(tree.children);
         TreeNode expr= (TreeNode) tree.children.get(2);
         Object exp= handleExpr((TreeNode) expr.children.get(0));
         System.out.println(exp);
@@ -46,26 +43,21 @@ public class TreeInterpreter {
     public static void handleAsmt(TreeNode tree){
         TreeNode expr= (TreeNode) tree.children.get(0);
         List child=expr.children;
-        Collections.reverse(child);
         Map.Entry<String,Object> id=new AbstractMap.SimpleEntry<>(child.get(1).toString(), handleExpr((TreeNode) child.get(3)));
         ids.add(id);
     }
 
     public static void handleReasmt(TreeNode tree){
         List child=tree.children;
-        if(child.get(0).toString().substring(1).equals("_EXPR")){
-            Collections.reverse(child);
-        }
+
         int index=-1;
-        System.out.println(child);
         for (Map.Entry<String,Object> o:ids ) {
             if(o.getKey().equals(child.get(0).toString())){
                 index=ids.indexOf(o);
             }
         }
-        System.out.println(index);
         if(index!=-1) {
-            System.out.println(handleExpr((TreeNode) child.get(2)));
+            //System.out.println(handleExpr((TreeNode) child.get(2)));
             ids.get(index).setValue(handleExpr((TreeNode) child.get(2)));
         }
         else {
@@ -78,7 +70,7 @@ public class TreeInterpreter {
             List<String> i_exp=handleIntegerExpr(exprType);
             int lh = Integer.parseInt(i_exp.get(0));
             for(int i=1;i<i_exp.size();i+=2){
-                int compare = (lh + "").compareTo(i_exp.get(i + 1) + "");
+                int rh=Integer.parseInt(i_exp.get(i + 1));
                 switch (i_exp.get(i)){
                     case "+": lh=lh + Integer.parseInt(i_exp.get(i+1));break;
                     case "-": lh=lh - Integer.parseInt(i_exp.get(i+1));break;
@@ -91,12 +83,12 @@ public class TreeInterpreter {
                         lh=lh / Integer.parseInt(i_exp.get(i+1));
                         break;
                     case "^": lh= (int) Math.pow(lh , Integer.parseInt(i_exp.get(i+1)));break;
-                    case "<": lh= ((compare<0) ? 1 : 0);break;
-                    case ">": lh= ((compare>0) ? 1 : 0);break;
-                    case "==": lh= ((compare==0) ? 1 : 0);break;
-                    case "!=": lh= ((compare!=0) ? 1 : 0);break;
-                    case "<=": lh= ((compare<=0) ? 1 : 0);break;
-                    case ">=": lh= ((compare>=0) ? 1 : 0);break;
+                    case "<": lh= ((lh<rh) ? 1 : 0);break;
+                    case ">": lh= ((lh>rh) ? 1 : 0);break;
+                    case "==": lh= ((lh==rh) ? 1 : 0);break;
+                    case "!=": lh= ((lh!=rh) ? 1 : 0);break;
+                    case "<=": lh= ((lh<=rh) ? 1 : 0);break;
+                    case ">=": lh= ((lh>=rh) ? 1 : 0);break;
                 }
             }
             return lh;
@@ -143,16 +135,20 @@ public class TreeInterpreter {
         }
     }
     public static void handleWhile(TreeNode i_expr,TreeNode b_stmtls){
-        while (!handleExpr(i_expr).equals(0)){
+        while ((int)handleExpr(i_expr)!=0){
             handleB_STMT(b_stmtls);
+//            System.out.println(ids);
+//            System.out.println((int)ids.get(0).getValue()<10);
         }
+        //System.out.println("I_EXPR: "+handleExpr(i_expr));
+        //System.out.println((int)ids.get(0).getValue()<10);
+
     }
     public static void handleFor(TreeNode asmt,TreeNode i_expr,TreeNode reasmt,TreeNode b_stmtls){
 
     }
     public static List<String> handleDoubleExpr(TreeNode treeNode){
         List child=treeNode.children;
-        Collections.reverse(child);
         List<String> expr=new ArrayList<>();
         if(child.get(0).toString().equals("SIGN")){
             String sign=handleSign((TreeNode) child.get(0));
@@ -168,7 +164,6 @@ public class TreeInterpreter {
     }
     public static List<String> handleDoubleExpr2(TreeNode treeNode){
         List child=treeNode.children;
-        Collections.reverse(child);
         List<String> expr=new ArrayList<>();
         if(child.size()==2){
             expr.add(handleOperation((TreeNode) child.get(0)));
@@ -179,8 +174,6 @@ public class TreeInterpreter {
     public static List<String> handleIntegerExpr(TreeNode treeNode){
         List child=treeNode.children;
 
-
-        Collections.reverse(child);
         List<String> expr=new ArrayList<>();
         if(child.get(0).toString().equals("B_EXPR")){
             expr.add(handleBooleanExpr((TreeNode)child.get(0))+"");
@@ -188,13 +181,11 @@ public class TreeInterpreter {
         } else if(child.get(0).toString().equals("I_EXPR2")){
             expr.addAll(handleIntegerExpr2((TreeNode) child.get(0)));
             expr.addAll(handleIntegerExpr3((TreeNode)child.get(1)));
-
         }
         return expr;
     }
     public static List<String> handleIntegerExpr2(TreeNode treeNode){
         List child=treeNode.children;
-        Collections.reverse(child);
         List<String> expr=new ArrayList<>();
 
         if(child.get(0).toString().equals("SIGN")){
@@ -215,7 +206,6 @@ public class TreeInterpreter {
     }
     public static List<String> handleIntegerExpr3(TreeNode treeNode){
         List child=treeNode.children;
-        Collections.reverse(child);
         List<String> expr=new ArrayList<>();
         if(child.size()==2){
             expr.add(handleOperation((TreeNode) child.get(0)));
@@ -225,7 +215,6 @@ public class TreeInterpreter {
     }
     public static String handleStringExpr(TreeNode treeNode){
         List child=treeNode.children;
-        Collections.reverse(child);
         if (child.get(0).toString().charAt(0)=='\"'){
             return child.get(0).toString().substring(1,child.get(0).toString().length()-1);
         }
@@ -243,7 +232,6 @@ public class TreeInterpreter {
     }
     public static int handleBooleanExpr(TreeNode treeNode){
         List child=treeNode.children;
-        Collections.reverse(child);
         int compare;
         if(child.get(0).toString().equals("S_EXPR")){
             compare = (handleStringExpr((TreeNode) child.get(0))).compareTo(handleStringExpr((TreeNode) child.get(2)));
@@ -292,9 +280,7 @@ public class TreeInterpreter {
 
     public static void runTree(TreeNode tree){
         List<TreeNode> statements = findSTMTS(tree,new ArrayList<>());
-        Collections.reverse(statements);
         for (TreeNode statement:statements) {
-            Collections.reverse(statement.children);
             if (statement.children.get(0).toString().equals("PRINTSTMT")) {
                 handlePrint((TreeNode) statement.children.get(0));
             } else if (statement.children.get(0).toString().equals("ASMT")) {

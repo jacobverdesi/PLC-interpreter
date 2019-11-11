@@ -1,1 +1,6 @@
-if( x > 2 ) {print( "foo" );}if( x > 2 ) {print( "foo" );}else { print( "bar" ); }
+Integer x=0;
+while (x<10){
+    print(x);
+    x=x+1;
+}
+print(x);
