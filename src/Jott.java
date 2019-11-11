@@ -14,13 +14,10 @@ public class Jott {
             System.out.println("Tokenized");
             TreeNode tree=Parser.parseTree(rules,matrix,tokens);
             TreeNode.printTree(tree);
-
         }
     }
-
-    public static void main(String[] args){
-        List<String> prog = FileReader.readFile(args[0]);
-        String s="";
+    public static void jott(String progFile){
+        List<String> prog = FileReader.readFile(progFile);
         List<String> table = FileReader.readFile("LALR(1) parse table");
         List<String> rules = FileReader.readFile("Grammar2");
         List<List<String>> matrix = Parser.parseTable(table);
@@ -31,10 +28,13 @@ public class Jott {
 
         System.out.println("\nProgram Tree:");
         TreeNode tree=Parser.parseTree(rules,matrix,tokens);
-        TreeNode.reverseTree(tree);
         TreeNode.printTree(tree);
 
         System.out.println("\nOutput:");
         TreeInterpreter.runTree(tree);
+    }
+
+    public static void main(String[] args){
+        jott(args[0]);
     }
 }

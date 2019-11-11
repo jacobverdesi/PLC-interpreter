@@ -170,16 +170,7 @@ public class Parser {
         stack.pop();
         Object tree=stack.pop();
         ids.clear();
+        TreeNode.reverseTree((TreeNode) tree);
         return  (TreeNode) tree;
-    }
-    public static void main (String args[]){
-        List<String> prog = FileReader.readFile("C:\\Users\\Jake\\Desktop\\CS CLASSES\\PLC\\PLC-interpreter\\src\\program.j");
-        List<String> table = FileReader.readFile("LALR(1) parse table");
-        List<String> rules = FileReader.readFile("GRAMMAR");
-        List<List<String>> matrix = Parser.parseTable(table);
-        List<List<Map.Entry<String, TERMINAL>>> tokens=Tokenizer.dfaTokenizer(prog);
-        Tokenizer.printTerminals(tokens);
-        TreeNode tree=Parser.parseTree(rules,matrix,tokens);
-        TreeNode.printTree(tree);
     }
 }

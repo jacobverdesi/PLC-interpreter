@@ -172,8 +172,6 @@ public class Tokenizer {
      */
 
     public static void printTokens(List<List<Map.Entry<String, TERMINAL>>> tokens) {
-        System.out.println("Tokens\n");
-
         for (List<Map.Entry<String, TERMINAL>> line : tokens) {
             for (Map.Entry<String, TERMINAL> token : line) {
                 System.out.print("[" + token.getKey() + "] ");
@@ -182,20 +180,11 @@ public class Tokenizer {
         }
     }
     public static void printTerminals(List<List<Map.Entry<String, TERMINAL>>> tokens) {
-        System.out.println("Terminals\n");
         for (List<Map.Entry<String, TERMINAL>> line: tokens) {
             for (Map.Entry<String, TERMINAL> token: line) {
                 System.out.print("" + token.getValue() + " ");
             }
             System.out.println();
         }
-    }
-    public static void main (String args[]){
-        List<String> prog = FileReader.readFile("C:\\Users\\Jacob's Laptop\\Desktop\\CS CLASSES\\PLC\\Phase1\\Phase1\\src\\tokenTest.j");
-
-        List<List<Map.Entry<String, TERMINAL>>> tokens=Tokenizer.dfaTokenizer(prog);
-        Tokenizer.printTokens(tokens);
-        Tokenizer.printTerminals(tokens);
-
     }
 }
