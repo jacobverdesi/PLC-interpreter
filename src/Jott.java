@@ -41,8 +41,8 @@ public class Jott {
 
         List<String> table = FileReader.readFile("LALR(1) parse table");
         List<String> rules = FileReader.readFile("GRAMMAR");
-        //jott(args[0],table,rules);
-        ArrayList l= new ArrayList(Arrays.asList(0,1,2,5,6,7,8,9,11,12,13,14,15,17,23));
-        testProgs(l,table,rules);
+        jott("tests/prog9.j",table,rules);
+        //ArrayList l= new ArrayList(Arrays.asList(0,1,2,5,6,7,8,9,11,12,13,14,15,17,23));
+        //testProgs(l,table,rules);
     }
 }
