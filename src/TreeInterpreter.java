@@ -41,15 +41,11 @@ public class TreeInterpreter {
             } else if (statement.children.get(0).toString().equals("while")){
                 handleWhile((TreeNode) statement.children.get(2),(TreeNode) statement.children.get(5));
             }
-
         }
     }
 
     public static void handlePrint(TreeNode tree){
-        TreeNode expr= (TreeNode) tree.children.get(2);
-        System.out.println(expr);
-        Object exp= handleExpr((TreeNode) expr.children.get(0));
-        System.out.println(exp);
+        System.out.println(handleExpr((TreeNode) tree.children.get(2)));
     }
     public static void handleAsmt(TreeNode tree){
         TreeNode expr= (TreeNode) tree.children.get(0);
@@ -60,7 +56,6 @@ public class TreeInterpreter {
 
     public static void handleReasmt(TreeNode tree){
         List child=tree.children;
-
         int index=-1;
         for (Map.Entry<String,Object> o:ids ) {
             if(o.getKey().equals(child.get(0).toString())){
@@ -68,8 +63,8 @@ public class TreeInterpreter {
             }
         }
         if(index!=-1) {
-            //System.out.println(handleExpr((TreeNode) child.get(2)));
-            ids.get(index).setValue(handleExpr((TreeNode)child.get(2)));
+            ids.get(index).setValue(handleExprType((TreeNode)child.get(2)));
+            System.out.println("UPDATED ID:"+ids);
         }
         else {
             System.err.format("Undeclared Variable:%s",child.get(0).toString());
@@ -78,7 +73,6 @@ public class TreeInterpreter {
     }
 
     public static void handleIf(TreeNode expr,TreeNode b_stmtls){
-        System.out.println(expr);
         if(!handleExpr(expr).equals(0)){
             handleB_STMT(b_stmtls);
         }
@@ -103,7 +97,6 @@ public class TreeInterpreter {
             handleB_STMT(b_stmtls);
             handleReasmt(reasmt);
         }
-
     }
     public static Object handleExpr(TreeNode tree){
         return handleExprType((TreeNode) tree.children.get(0));
@@ -111,7 +104,7 @@ public class TreeInterpreter {
     public static Object handleExprType(TreeNode exprType){
         if (exprType.toString().equals("I_EXPR")) {
             List<String> i_exp=handleIntegerExpr(exprType);
-            System.out.println(i_exp);
+            //System.out.println(i_exp);
             int lh = Integer.parseInt(i_exp.get(0));
             for(int i=1;i<i_exp.size();i+=2){
                 int rh=Integer.parseInt(i_exp.get(i + 1));
@@ -168,7 +161,6 @@ public class TreeInterpreter {
 
     public static List<String> handleIntegerExpr(TreeNode treeNode){
         List child=treeNode.children;
-
         List<String> expr=new ArrayList<>();
         if(child.get(0).toString().equals("B_EXPR")){
             expr.add(handleBooleanExpr((TreeNode)child.get(0))+"");
@@ -190,11 +182,9 @@ public class TreeInterpreter {
             expr.add(""+value);
         }
         else if(child.size()==1){
-            System.out.println(child.get(0));
             expr.add(handleID((TreeNode) child.get(0)).toString());
         }
         else if(child.get(0).toString().equals("I_EXPR2")){
-            System.out.println(child.get(0));
             expr.addAll(handleIntegerExpr2((TreeNode)child.get(0)));
             expr.add(((TreeNode)child.get(1)).children.get(0).toString());
             expr.addAll(handleIntegerExpr2((TreeNode)child.get(2)));
@@ -289,7 +279,6 @@ public class TreeInterpreter {
         return treeNode.children.get(0).toString();
     }
     public static Object handleID(TreeNode treeNode){
-        System.out.println(ids);
         String id=treeNode.toString();
         for (Map.Entry<String,Object> o:ids ) {
             if(o.getKey().equals(id)){
@@ -308,7 +297,6 @@ public class TreeInterpreter {
                 handlePrint((TreeNode) statement.children.get(0));
             } else if (statement.children.get(0).toString().equals("ASMT")) {
                 handleAsmt((TreeNode) statement.children.get(0));
-                System.out.println(ids);
             } else if (statement.children.get(0).toString().equals("REASMT")) {
                 handleReasmt((TreeNode) statement.children.get(0));
             } else if (statement.children.get(0).toString().equals("EXPR")) {
