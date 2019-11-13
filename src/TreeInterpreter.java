@@ -1,4 +1,4 @@
-import com.sun.source.tree.Tree;
+
 
 import java.util.*;
 
@@ -26,7 +26,7 @@ public class TreeInterpreter {
         }
         return stmts;
     }
-    public static void handleB_STMT(TreeNode tree){
+    public static void handleB_STMT(TreeNode tree) throws RuntimeError {
         List<TreeNode> statements = findB_STMTS(tree,new ArrayList<>());
         for (TreeNode statement:statements) {
             if (statement.children.get(0).toString().equals("PRINTSTMT")) {
@@ -47,17 +47,17 @@ public class TreeInterpreter {
         }
     }
 
-    public static void handlePrint(TreeNode tree){
+    public static void handlePrint(TreeNode tree) throws RuntimeError {
         System.out.println(handleExpr((TreeNode) tree.children.get(2)));
     }
-    public static void handleAsmt(TreeNode tree){
+    public static void handleAsmt(TreeNode tree) throws RuntimeError {
         TreeNode expr= (TreeNode) tree.children.get(0);
         List child=expr.children;
         Map.Entry<String,Object> id=new AbstractMap.SimpleEntry<>(child.get(1).toString(), handleExprType((TreeNode) child.get(3)));
         ids.add(id);
     }
 
-    public static void handleReasmt(TreeNode tree){
+    public static void handleReasmt(TreeNode tree) throws RuntimeError {
         List child=tree.children;
         int index=-1;
         for (Map.Entry<String,Object> o:ids ) {
@@ -69,17 +69,16 @@ public class TreeInterpreter {
             ids.get(index).setValue(handleExprType((TreeNode)child.get(2)));
         }
         else {
-            System.err.format("Undeclared Variable:%s",child.get(0).toString());
-            System.exit(0);
+            throw new RuntimeError("Undelared Variable: "+child.get(0).toString(),0);
         }
     }
 
-    public static void handleIf(TreeNode expr,TreeNode b_stmtls){
+    public static void handleIf(TreeNode expr,TreeNode b_stmtls) throws RuntimeError {
         if(!handleExpr(expr).equals(0)){
             handleB_STMT(b_stmtls);
         }
     }
-    public static void handleIfElse(TreeNode expr,TreeNode b_stmtls,TreeNode b_stmtls2){
+    public static void handleIfElse(TreeNode expr,TreeNode b_stmtls,TreeNode b_stmtls2) throws RuntimeError {
         if(!handleExpr(expr).equals(0)){
             handleB_STMT(b_stmtls);
         }
@@ -87,23 +86,23 @@ public class TreeInterpreter {
             handleB_STMT(b_stmtls2);
         }
     }
-    public static void handleWhile(TreeNode i_expr,TreeNode b_stmtls){
+    public static void handleWhile(TreeNode i_expr,TreeNode b_stmtls) throws RuntimeError {
         while ((int)handleExprType(i_expr)!=0){
             handleB_STMT(b_stmtls);
         }
 
     }
-    public static void handleFor(TreeNode asmt,TreeNode i_expr,TreeNode reasmt,TreeNode b_stmtls){
+    public static void handleFor(TreeNode asmt,TreeNode i_expr,TreeNode reasmt,TreeNode b_stmtls) throws RuntimeError {
         handleAsmt(asmt);
         while ((int)handleExprType(i_expr)!=0){
             handleB_STMT(b_stmtls);
             handleReasmt(reasmt);
         }
     }
-    public static Object handleExpr(TreeNode tree){
+    public static Object handleExpr(TreeNode tree) throws RuntimeError{
         return handleExprType((TreeNode) tree.children.get(0));
     }
-    public static Object handleExprType(TreeNode exprType){
+    public static Object handleExprType(TreeNode exprType) throws RuntimeError{
         if (exprType.toString().equals("I_EXPR")) {
             List<String> i_exp=handleIntegerExpr(exprType);
 
@@ -116,8 +115,7 @@ public class TreeInterpreter {
                     case "*": lh=lh * Integer.parseInt(i_exp.get(i+1));break;
                     case "/":
                         if (Integer.parseInt(i_exp.get(i+1))==0){
-                            System.err.println("Runtime Error: Divide by zero");
-                            System.exit(0);
+                            throw new RuntimeError("Divide by zero",exprType.lineNum);
                         }
                         lh=lh / Integer.parseInt(i_exp.get(i+1));
                         break;
@@ -143,8 +141,7 @@ public class TreeInterpreter {
                     case "*": lh = lh * rh;break;
                     case "/":
                         if (rh==0){
-                            System.err.println("Runtime Error: Divide by zero");
-                            System.exit(0);
+                            throw new RuntimeError("Divide by zero",exprType.lineNum);
                         }
                         lh=lh / rh;
                         break;
@@ -161,7 +158,7 @@ public class TreeInterpreter {
         }
     }
 
-    public static List<String> handleIntegerExpr(TreeNode treeNode){
+    public static List<String> handleIntegerExpr(TreeNode treeNode) throws RuntimeError {
         List child=treeNode.children;
         List<String> expr=new ArrayList<>();
         if(child.get(0).toString().equals("B_EXPR")){
@@ -173,7 +170,7 @@ public class TreeInterpreter {
         }
         return expr;
     }
-    public static List<String> handleIntegerExpr2(TreeNode treeNode){
+    public static List<String> handleIntegerExpr2(TreeNode treeNode) throws RuntimeError {
         List child=treeNode.children;
         List<String> expr=new ArrayList<>();
 
@@ -193,7 +190,7 @@ public class TreeInterpreter {
         }
         return expr;
     }
-    public static List<String> handleIntegerExpr3(TreeNode treeNode){
+    public static List<String> handleIntegerExpr3(TreeNode treeNode) throws RuntimeError {
         List child=treeNode.children;
         List<String> expr=new ArrayList<>();
         if(child.size()==3){
@@ -203,7 +200,7 @@ public class TreeInterpreter {
         }
         return expr;
     }
-    public static List<String> handleDoubleExpr(TreeNode treeNode){
+    public static List<String> handleDoubleExpr(TreeNode treeNode) throws RuntimeError {
         List child=treeNode.children;
         List<String> expr=new ArrayList<>();
         if(child.get(0).toString().equals("SIGN")){
@@ -218,7 +215,7 @@ public class TreeInterpreter {
         }
         return expr;
     }
-    public static List<String> handleDoubleExpr2(TreeNode treeNode){
+    public static List<String> handleDoubleExpr2(TreeNode treeNode) throws RuntimeError {
         List child=treeNode.children;
         List<String> expr=new ArrayList<>();
         if(child.size()==2){
@@ -227,7 +224,7 @@ public class TreeInterpreter {
         }
         return expr;
     }
-    public static String handleStringExpr(TreeNode treeNode){
+    public static String handleStringExpr(TreeNode treeNode) throws RuntimeError {
         List child=treeNode.children;
         if (child.get(0).toString().charAt(0)=='\"'){
             return child.get(0).toString().substring(1,child.get(0).toString().length()-1);
@@ -244,7 +241,7 @@ public class TreeInterpreter {
         }
         return "";
     }
-    public static int handleBooleanExpr(TreeNode treeNode){
+    public static int handleBooleanExpr(TreeNode treeNode) throws RuntimeError {
         List child=treeNode.children;
         int compare;
         if(child.get(0).toString().equals("S_EXPR")){
@@ -280,19 +277,17 @@ public class TreeInterpreter {
     public static String handleOperation(TreeNode treeNode){
         return treeNode.children.get(0).toString();
     }
-    public static Object handleID(TreeNode treeNode){
+    public static Object handleID(TreeNode treeNode) throws RuntimeError {
         String id=treeNode.toString();
         for (Map.Entry<String,Object> o:ids ) {
             if(o.getKey().equals(id)){
                 return o.getValue();
             }
         }
-        System.err.format("Undeclared Variable:%s",id);
-        System.exit(0);
-        return null;
+        throw new RuntimeError("Undeclared variable: "+id,treeNode.lineNum);
     }
 
-    public static void runTree(TreeNode tree){
+    public static void runTree(TreeNode tree) throws RuntimeError {
         List<TreeNode> statements = findSTMTS(tree,new ArrayList<>());
         for (TreeNode statement:statements) {
             if (statement.children.get(0).toString().equals("PRINTSTMT")) {

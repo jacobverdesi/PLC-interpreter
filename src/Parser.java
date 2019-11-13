@@ -10,10 +10,6 @@ public class Parser {
             System.out.println();
         }
     }
-    private static void parseError(int line , int column, TERMINAL curr){
-        System.err.format("Invalid syntax line: %s column: %s character: %s\n", line, column,curr);
-        System.exit(0);
-    }
 
     public static List<List<String>> parseTable(List<String> lines){
         List<List<String>> matrix = new ArrayList<>();
@@ -78,7 +74,7 @@ public class Parser {
         }
         return currToken;
     }
-    public static TreeNode parseTree(List<String> rules,List<List<String>> parseTable, List<List<Map.Entry<String, TERMINAL>>> tokens){
+    public static TreeNode parseTree(List<String> rules,List<List<String>> parseTable, List<List<Map.Entry<String, TERMINAL>>> tokens) throws SyntaxError {
         List<Map.Entry<String, TERMINAL>> tokenList=new ArrayList<>();
         for (List<Map.Entry<String,TERMINAL>> t:tokens) {
             tokenList.addAll(t);
@@ -98,7 +94,7 @@ public class Parser {
             TERMINAL temp2=currToken;
             currToken=handleID(currToken,idName,identifier);
             if(currToken==null) {
-                parseError(step, tokenIndex, temp2);
+                throw new SyntaxError("Undefined variable: "+temp2,step);
             }
         }
         List<String> state=parseTable.get(stateIndex(stack));
@@ -125,15 +121,15 @@ public class Parser {
                 }
                 String rule=rules.get(Integer.parseInt(action.substring(1))).split(" ")[0];
 
-                TreeNode node = new TreeNode<>(rule);
+                TreeNode node = new TreeNode<>(rule,step);
 
                 for(int i=0;i<removed.size();i++){
                     if(removed.get(i) instanceof TreeNode){
                         TreeNode child=(TreeNode)removed.get(i);
-                        node.addChild(child);
+                        node.addChild(child,child.lineNum);
                     }
                     else {
-                        node.addChild(removed.get(i).toString());
+                        node.addChild(removed.get(i).toString(),step);
                     }
                 }
                 stack.push(node);
@@ -151,15 +147,16 @@ public class Parser {
                 TERMINAL temp2 = currToken;
                 currToken = handleID(currToken,idName, identifier);
                 if (currToken == null) {
-                    parseError(step, tokenIndex, temp2);
+                    throw new SyntaxError("Undefined variable: "+temp2,step);
                 }
             }
             if(currToken.equals(TERMINAL.END)&&currToken!=temp) step++;
             if(actionIndex==-1) action=state.get(parseTable.get(0).indexOf(stack.peek().toString()));
             else action=state.get(parseTable.get(0).indexOf(currToken.toString()));
 
-            if(action.equals("")){
-                parseError(step,tokenIndex,currToken);
+            if(action.equals("")) {
+                TERMINAL token=tokenList.get(tokenIndex).getValue();
+                throw new SyntaxError("Expected something else got "+token.toString(),step);
             }
             if (!action.equals("acc")) {
                 actionType = actionElement(action);

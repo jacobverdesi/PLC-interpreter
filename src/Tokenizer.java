@@ -9,15 +9,6 @@ import java.util.*;
 
 public class Tokenizer {
 
-    /**
-     * Called when current state has no where to go
-     * Prints line and column and unexpected character
-     * exits program after
-     */
-    private static void tokenError(int line , int column, char curr){
-        System.err.format("Invalid syntax line: %s column: %s character: %s\n", line, column,curr);
-        System.exit(0);
-    }
 
     /**
      * Function that reads list of lines and tokenizes line using a DFA
@@ -37,7 +28,7 @@ public class Tokenizer {
      * @param lines
      * @return
      */
-    public static List<List<Map.Entry<String, TERMINAL>>> dfaTokenizer(List<String> lines){
+    public static List<List<Map.Entry<String, TERMINAL>>> dfaTokenizer(List<String> lines) throws SyntaxError{
         List<List<Map.Entry<String, TERMINAL>>> tokens= new ArrayList<>();
         int lineNum=0;
         DFAstate state=new DFAstate();
@@ -92,7 +83,7 @@ public class Tokenizer {
                         else if (curr == '{') state.reset(TERMINAL.L_BRACKET);
                         else if (curr == '}') state.reset(TERMINAL.R_BRACKET);
                         else if (curr == '\"') state.setState(14);
-                        else tokenError(lineNum,i,curr);
+                        else throw new SyntaxError("Unexpeced Character: "+curr,lineNum);
                         break;
                     case 1:
                         if (Character.isLetter(curr) || Character.isDigit(curr)){
@@ -111,12 +102,12 @@ public class Tokenizer {
                             }
                             continue;
                         }
-                        else tokenError(lineNum,i,curr);
-                        break;
+                        else throw new SyntaxError("Unexpeced Character: "+curr,lineNum);
+
                     case 2:
                         if (!Character.isDigit(next) && Character.isDigit(curr)) state.reset(TERMINAL.DOUBLE);
                         else if(Character.isDigit(curr)) state.setState(4);
-                        else tokenError(lineNum,i,curr);
+                        else throw new SyntaxError("Unexpeced Character: "+curr,lineNum);
                         break;
                     case 3:
                         if(Character.isDigit(curr)){
@@ -127,35 +118,34 @@ public class Tokenizer {
                             state.setState(4);
                             if(!Character.isDigit(next))state.reset(TERMINAL.DOUBLE);
                         }
-                        else tokenError(lineNum,i,curr);
+                        else throw new SyntaxError("Unexpeced Character: "+curr,lineNum);
                         break;
                     case 4:
                         if(Character.isDigit(curr)){
                             if(!Character.isDigit(next))state.reset(TERMINAL.DOUBLE);
                             continue;
                         }
-                        else tokenError(lineNum,i,curr);
-                        break;
+                        else throw new SyntaxError("Unexpeced Character: "+curr,lineNum);
                     case 5:
                         if (curr=='=') state.reset(TERMINAL.EQUAL);
-                        else tokenError(lineNum,i,curr);
+                        else throw new SyntaxError("Expected = got "+curr,lineNum);
                         break;
                     case 14:
                         if(Character.isDigit(curr) || Character.isLetter(curr) || curr== ' ') continue;
                         else if (curr=='\"') state.reset(TERMINAL.STRING);
-                        else tokenError(lineNum,i,curr);
+                        else throw new SyntaxError("Expected \" got "+curr,lineNum);
                         break;
                     case 16:
                         if (curr=='=') state.reset(TERMINAL.LESSEQUAL);
-                        else tokenError(lineNum,i,curr);
+                        else throw new SyntaxError("Expected = got "+curr,lineNum);
                         break;
                     case 17:
                         if (curr=='=') state.reset(TERMINAL.GREATEREQUAL);
-                        else tokenError(lineNum,i,curr);
+                        else throw new SyntaxError("Expected = got "+curr,lineNum);;
                         break;
                     case 18:
                         if (curr=='=') state.reset(TERMINAL.NOTEQUAL);
-                        else tokenError(lineNum,i,curr);
+                        else throw new SyntaxError("Expected = got "+curr,lineNum);;
                         break;
                 }
             }
