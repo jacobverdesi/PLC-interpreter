@@ -9,7 +9,9 @@ public class TreeInterpreter {
             if(t.toString().equals("STMT")){
                 stmts.add((TreeNode) t);
             }
-            findSTMTS((TreeNode)t,stmts);
+            else if(t.toString().equals("STMT_LIST")){
+                findSTMTS((TreeNode)t,stmts);
+            }
         }
         return stmts;
     }
@@ -18,14 +20,15 @@ public class TreeInterpreter {
             if(t.toString().equals("B_STMT")){
                 stmts.add((TreeNode) t);
             }
-            findB_STMTS((TreeNode)t,stmts);
+            else if(t.toString().equals("B_STMT_LIST")){
+                findB_STMTS((TreeNode)t,stmts);
+            }
         }
         return stmts;
     }
     public static void handleB_STMT(TreeNode tree){
         List<TreeNode> statements = findB_STMTS(tree,new ArrayList<>());
         for (TreeNode statement:statements) {
-            System.out.println(statement.children);
             if (statement.children.get(0).toString().equals("PRINTSTMT")) {
                 handlePrint((TreeNode) statement.children.get(0));
             } else if (statement.children.get(0).toString().equals("REASMT")) {
@@ -64,7 +67,6 @@ public class TreeInterpreter {
         }
         if(index!=-1) {
             ids.get(index).setValue(handleExprType((TreeNode)child.get(2)));
-            System.out.println("UPDATED ID:"+ids);
         }
         else {
             System.err.format("Undeclared Variable:%s",child.get(0).toString());
@@ -81,19 +83,19 @@ public class TreeInterpreter {
         if(!handleExpr(expr).equals(0)){
             handleB_STMT(b_stmtls);
         }
-        else {
+        else{
             handleB_STMT(b_stmtls2);
         }
     }
     public static void handleWhile(TreeNode i_expr,TreeNode b_stmtls){
-        while ((int)handleExprType((TreeNode) i_expr.children.get(0))!=0){
+        while ((int)handleExprType(i_expr)!=0){
             handleB_STMT(b_stmtls);
         }
 
     }
     public static void handleFor(TreeNode asmt,TreeNode i_expr,TreeNode reasmt,TreeNode b_stmtls){
         handleAsmt(asmt);
-        while ((int)handleExprType((TreeNode) i_expr.children.get(0))!=0){
+        while ((int)handleExprType(i_expr)!=0){
             handleB_STMT(b_stmtls);
             handleReasmt(reasmt);
         }
@@ -104,7 +106,7 @@ public class TreeInterpreter {
     public static Object handleExprType(TreeNode exprType){
         if (exprType.toString().equals("I_EXPR")) {
             List<String> i_exp=handleIntegerExpr(exprType);
-            //System.out.println(i_exp);
+
             int lh = Integer.parseInt(i_exp.get(0));
             for(int i=1;i<i_exp.size();i+=2){
                 int rh=Integer.parseInt(i_exp.get(i + 1));
