@@ -1,7 +1,7 @@
 import java.util.*;
 
 
-public class TreeNode<T> implements Iterable<TreeNode<T>> {
+public class TreeNode<T>{
 
     private T data;
     private TreeNode<T> parent;
@@ -33,10 +33,6 @@ public class TreeNode<T> implements Iterable<TreeNode<T>> {
         return data != null ? data.toString() : "[data null]";
     }
 
-    @Override
-    public Iterator<TreeNode<T>> iterator() {
-        return new TreeNodeIter<>(this);
-    }
     static void printTree(TreeNode tree){
         String s="   ";
         System.out.println(tree.depth+" "+s.repeat(tree.depth)+tree);

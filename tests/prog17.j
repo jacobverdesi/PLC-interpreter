@@ -16,6 +16,6 @@ while( y >= 0 ) { y = y - 1; }
 if( y == -1 ){ accept = concat(accept, "s" ); }
 else { print( "Failed" ); }
 while( y == 0 ) { print( "Failed" ); y = 1; }
-concat( accept, "e" );
-if( b - a + y == 0 ) { concat( accept, "d" ); }
+accept=concat( accept, "e" );
+if( b - a + y == 0 ) { accept=concat( accept, "d" ); }
 print( accept );

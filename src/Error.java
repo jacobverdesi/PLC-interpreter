@@ -1,4 +1,3 @@
-
 class SyntaxError extends java.lang.Exception {
     private int line;
     public SyntaxError(String message,int line){
