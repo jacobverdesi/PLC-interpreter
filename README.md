@@ -3,12 +3,12 @@ An interpreter
 Built in java
 
 To build this program:
-1. Make sure that the LALR and GRAMMAR files are in the root directory
-2. From the root directory, run "javac source/*java -d classes" in a terminal
+1. Place the src and tests folders in a root directory
+2. Make sure that the LALR and GRAMMAR files are in the root directory
+3. From the root directory, run "javac source/*java -d classes" in a terminal
 
 To run this program:
-1. Make sure test files are in a directory called "tests" inside the root directory 
-2. From the root directory, run "java -cp classes Jott <program_args>" in a terminal
+1. From the root directory, run "java -cp classes Jott <program_args>" in a terminal
 
 
 
