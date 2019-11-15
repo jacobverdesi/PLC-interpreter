@@ -1,14 +1,19 @@
 # PLC-interpreter
 An interpreter
 Built in java
-To build make sure LALR parse table and Grammar files are outside of src
-Run Jott.java with program arguments that is the filename of a jott file.
 
+To build this program:
+1. Make sure that the LALR and GRAMMAR files are in the root directory
+2. From the root directory, run "javac source/*java -d classes" in a terminal
+
+To run this program:
+1. Make sure test files are in a directory called "tests" inside the root directory 
+2. From the root directory, run "java -cp classes Jott <program_args>" in a terminal
 
 
 
 We created this project with a series of classes to interpret the file
-First off the program will read in the file along with a grammer and LALR parse table
+First off the program will read in the file along with a grammar and LALR parse table
 From this the program sends the jott file to the Tokenizer class which uses a DFA to tokenize the file
 In this tokenizer the DFA reads character by character then if its found in an accepting state lables the token with a TERMINAL type
 The tokenizer returns a 2d List of maps containing the token and its TERMINAL enum  type
