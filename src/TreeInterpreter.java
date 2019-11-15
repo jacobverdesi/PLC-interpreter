@@ -4,6 +4,7 @@ import java.util.*;
 
 public class TreeInterpreter {
     private static List<Map.Entry<String,Object>> ids= new ArrayList<>();
+
     public static List<TreeNode> findSTMTS(TreeNode tree,List<TreeNode> stmts){
         for (Object t: tree.children){
             if(t.toString().equals("STMT")){
@@ -69,6 +70,7 @@ public class TreeInterpreter {
             ids.get(index).setValue(handleExprType((TreeNode)child.get(2)));
         }
         else {
+            ids.clear();
             throw new RuntimeError("Undelared Variable: "+child.get(0).toString(),0);
         }
     }
@@ -115,6 +117,7 @@ public class TreeInterpreter {
                     case "*": lh=lh * Integer.parseInt(i_exp.get(i+1));break;
                     case "/":
                         if (Integer.parseInt(i_exp.get(i+1))==0){
+                            ids.clear();
                             throw new RuntimeError("Divide by zero",exprType.lineNum);
                         }
                         lh=lh / Integer.parseInt(i_exp.get(i+1));
@@ -141,6 +144,7 @@ public class TreeInterpreter {
                     case "*": lh = lh * rh;break;
                     case "/":
                         if (rh==0){
+                            ids.clear();
                             throw new RuntimeError("Divide by zero",exprType.lineNum);
                         }
                         lh=lh / rh;
@@ -284,6 +288,7 @@ public class TreeInterpreter {
                 return o.getValue();
             }
         }
+        ids.clear();
         throw new RuntimeError("Undeclared variable: "+id,treeNode.lineNum);
     }
 

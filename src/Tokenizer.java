@@ -1,14 +1,13 @@
+
+import java.io.*;
+import java.util.*;
 /**
  * Interpreter project
  * Scanner class?
  * @author: Jacob Verdesi jxv3386@rit.edu()
  */
 
-import java.io.*;
-import java.util.*;
-
 public class Tokenizer {
-
 
     /**
      * Function that reads list of lines and tokenizes line using a DFA
@@ -30,7 +29,7 @@ public class Tokenizer {
      */
     public static List<List<Map.Entry<String, TERMINAL>>> dfaTokenizer(List<String> lines) throws SyntaxError{
         List<List<Map.Entry<String, TERMINAL>>> tokens= new ArrayList<>();
-        int lineNum=0;
+        int lineNum=1;
         DFAstate state=new DFAstate();
         for(String line: lines){
             char[] chars=line.toCharArray();
@@ -39,7 +38,7 @@ public class Tokenizer {
                 if(state.getState()==0 && (chars[i]==' '|| chars[i]=='\n' || chars[i]=='\t')) continue; //ignore these chars
                 state.setCurr(chars[i]); // set the dfa current character
                 if(i<chars.length-1) state.setNext(chars[i + 1]); // set the dfa's next character if in range
-                else state.setNext(' '); //TODO: MIGHT HAVE BROKE SOMETHING
+                else state.setNext(' ');
                 char curr=state.getCurr(); // get curr character ....yes redundant
                 char next=state.getNext(); // get next character ....yes redundant
                 //System.out.println("i: "+i+" current: "+state.getCurr()+" next: "+state.getNext()+ " state: "+state.getState());

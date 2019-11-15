@@ -2,6 +2,7 @@ import java.util.*;
 
 public class Parser {
     private static List<Map.Entry<String,Object>> ids= new ArrayList<>();
+
     public static void printTable (List<List<String>> matrix){
         for(List<String> line: matrix){
             for(Object state:line){
@@ -41,14 +42,6 @@ public class Parser {
         }
         else return -1;
     }
-    public static TERMINAL checkTerminal(TERMINAL rule){
-        for(TERMINAL t:TERMINAL.values()){
-            if(t.name().equals(rule)){
-                return t;
-            }
-        }
-        return null;
-    }
     private static TERMINAL handleID(TERMINAL currToken,String idName,String identifier){
         boolean found = false;
         for (Map.Entry<String,Object> id:ids) {
@@ -78,6 +71,7 @@ public class Parser {
         List<Map.Entry<String, TERMINAL>> tokenList=new ArrayList<>();
         for (List<Map.Entry<String,TERMINAL>> t:tokens) {
             tokenList.addAll(t);
+            tokenList.add(new AbstractMap.SimpleEntry<>("NewLine",TERMINAL.NEWLINE));
         }
         Map.Entry<String, TERMINAL> end=new AbstractMap.SimpleEntry<>("EOF",TERMINAL.$);
 
@@ -85,23 +79,29 @@ public class Parser {
 
         Stack stack=new Stack<>();
         stack.push(0);
-        int step=1;
+        int line=1;
         int tokenIndex=0;
         TERMINAL currToken= tokenList.get(tokenIndex).getValue();
+        while (currToken==TERMINAL.NEWLINE){
+            tokenIndex++;
+            line++;
+            currToken= tokenList.get(tokenIndex).getValue();
+        }
         if (currToken==TERMINAL.ID){
             String idName=tokenList.get(tokenIndex).getKey();
             String identifier = stack.get(stack.size() - 2).toString();
             TERMINAL temp2=currToken;
             currToken=handleID(currToken,idName,identifier);
             if(currToken==null) {
-                throw new SyntaxError("Undefined variable: "+temp2,step);
+                ids.clear();
+                throw new SyntaxError("Undefined variable: "+temp2,line);
             }
         }
         List<String> state=parseTable.get(stateIndex(stack));
         String action=state.get(parseTable.get(0).indexOf(currToken.toString()));
         char actionType=actionElement(action);
         int actionIndex = actionIndex(action);
-        //System.out.printf("[%2d] %-60s %-70s [%3s]\n",step++,stack,tokenList.subList(tokenIndex,tokenList.size()),action);
+        //System.out.printf("[%2d] %-60s %-70s [%3s]\n",line,stack,tokenList.subList(tokenIndex,tokenList.size()),action);
 
         while (!action.equals("acc") ){
 
@@ -121,7 +121,7 @@ public class Parser {
                 }
                 String rule=rules.get(Integer.parseInt(action.substring(1))).split(" ")[0];
 
-                TreeNode node = new TreeNode<>(rule,step);
+                TreeNode node = new TreeNode<>(rule,line);
 
                 for(int i=0;i<removed.size();i++){
                     if(removed.get(i) instanceof TreeNode){
@@ -129,7 +129,7 @@ public class Parser {
                         node.addChild(child,child.lineNum);
                     }
                     else {
-                        node.addChild(removed.get(i).toString(),step);
+                        node.addChild(removed.get(i).toString(),line);
                     }
                 }
                 stack.push(node);
@@ -139,30 +139,37 @@ public class Parser {
             }
 
             state=parseTable.get(stateIndex(stack));
-            TERMINAL temp=currToken;
             currToken= tokenList.get(tokenIndex).getValue();
+            while (currToken==TERMINAL.NEWLINE){
+                tokenIndex++;
+                line++;
+                currToken= tokenList.get(tokenIndex).getValue();
+            }
             if (currToken==TERMINAL.ID) {
                 String idName = tokenList.get(tokenIndex).getKey();
                 String identifier = stack.get(stack.size() - 2).toString();
                 TERMINAL temp2 = currToken;
                 currToken = handleID(currToken,idName, identifier);
                 if (currToken == null) {
-                    throw new SyntaxError("Undefined variable: "+temp2,step);
+                    ids.clear();
+                    throw new SyntaxError("Undefined variable: "+temp2,line);
                 }
             }
-            if(currToken.equals(TERMINAL.END)&&currToken!=temp) step++;
+
             if(actionIndex==-1) action=state.get(parseTable.get(0).indexOf(stack.peek().toString()));
             else action=state.get(parseTable.get(0).indexOf(currToken.toString()));
+            //System.out.printf("[%2d] %-60s %-70s [%3s]\n",line,stack,tokenList.subList(tokenIndex,tokenList.size()),action);
 
             if(action.equals("")) {
                 TERMINAL token=tokenList.get(tokenIndex).getValue();
-                throw new SyntaxError("Expected something else got "+token.toString(),step);
+                ids.clear();
+                throw new SyntaxError("Expected something else got "+currToken,line);
             }
             if (!action.equals("acc")) {
                 actionType = actionElement(action);
                 actionIndex = actionIndex(action);
             }
-            //System.out.printf("[%2d] %-60s %-70s [%3s]\n",step,stack,tokenList.subList(tokenIndex,tokenList.size()),action);
+            //System.out.printf("[%2d] %-60s %-70s [%3s]\n",line,stack,tokenList.subList(tokenIndex,tokenList.size()),action);
         }
         stack.pop();
         Object tree=stack.pop();

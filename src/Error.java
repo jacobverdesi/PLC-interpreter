@@ -4,8 +4,7 @@ class SyntaxError extends java.lang.Exception {
         super(message);
         this.line=line;
     }
-    int getLine() {
-        return line;
+    int getLine() {;return line;
     }
 }
 class RuntimeError extends java.lang.Exception {
