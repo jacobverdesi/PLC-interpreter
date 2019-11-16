@@ -206,7 +206,7 @@ public class Parser {
 
                 String expected="";
                 for(int i=1;i<state.size()-1;i++){
-                    if (!state.get(i).isBlank()){
+                    if (!state.get(i).equals("")){
                         expected=parseTable.get(0).get(i);
                         break;
                     }
