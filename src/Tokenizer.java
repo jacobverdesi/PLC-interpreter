@@ -132,7 +132,7 @@ public class Tokenizer {
                     case 14:
                         if(Character.isDigit(curr) || Character.isLetter(curr) || curr== ' ') continue;
                         else if (curr=='\"') state.reset(TERMINAL.STRING);
-                        else throw new SyntaxError("Expected \" got "+curr,lineNum);
+                        else throw new SyntaxError("Missing \"",lineNum);
                         break;
                     case 16:
                         if (curr=='=') state.reset(TERMINAL.LESSEQUAL);

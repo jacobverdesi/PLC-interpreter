@@ -10,8 +10,31 @@ public class Parser {
             }
             System.out.println();
         }
-    }
 
+    }
+    public static String getType(String currToken){
+        String secondType;
+        switch (currToken) {
+            case "D_ID":
+            case "D_EXPR":
+            case "D_EXPR2":
+                secondType = "Double";
+                break;
+            case "I_ID":
+            case "I_EXPR":
+            case "I_EXPR2":
+            case "I_EXPR3":
+                secondType = "Integer";
+                break;
+            case "S_ID":
+            case "S_EXPR":
+                secondType = "String";
+                break;
+            default:
+                secondType= "Unknown Type";
+        }
+        return secondType;
+    }
     public static List<List<String>> parseTable(List<String> lines){
         List<List<String>> matrix = new ArrayList<>();
         String s=lines.get(0);
@@ -164,7 +187,32 @@ public class Parser {
             if(action.equals("")) {
                 TERMINAL token=tokenList.get(tokenIndex).getValue();
                 ids.clear();
-                throw new SyntaxError("Expected something else got "+currToken,line);
+                Object identifiyer=stack.get(stack.size()-4);
+                String firstType="";
+                String secondType="";
+                secondType=getType(currToken.toString());
+                if(identifiyer.toString().equals("=")|| !getType(identifiyer.toString()).equals("Unknown Type")){
+                    if (identifiyer.toString().equals("=")){
+
+                        secondType=getType(stack.get(stack.size()-2).toString());
+                        throw new SyntaxError("Invalid type in re-assignment: Expected Integer got "+secondType,line);
+                    }else {
+                        firstType=getType(stack.get(stack.size()-4).toString());
+
+                        throw new SyntaxError("Expected "+firstType+" got " + secondType, line);
+                    }
+
+                }
+
+                String expected="";
+                for(int i=1;i<state.size()-1;i++){
+                    if (!state.get(i).isBlank()){
+                        expected=parseTable.get(0).get(i);
+                        break;
+                    }
+                }
+                throw new SyntaxError("Expected "+expected+" got "+currToken,line);
+
             }
             if (!action.equals("acc")) {
                 actionType = actionElement(action);
