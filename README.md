@@ -8,7 +8,7 @@ To build this program:
 3. From the root directory, run "javac src/*java -d classes" in a terminal
 
 To run this program:
-1. From the root directory, run "java -cp classes Jott prog.j" in a terminal
+1. From the root directory, run "java -cp classes Jott tests/progN.j" in a terminal where N is test Number
 
 
 
