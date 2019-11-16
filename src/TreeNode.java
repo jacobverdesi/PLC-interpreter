@@ -34,8 +34,10 @@ public class TreeNode<T>{
     }
 
     static void printTree(TreeNode tree){
-        String s="   ";
-        System.out.println(tree.depth+" "+s.repeat(tree.depth)+tree);
+        for (int i=0;i<tree.depth;i++){
+            System.out.print("   ");
+        }
+        System.out.println(tree);
         for (Object t: tree.children){
             printTree((TreeNode) t);
         }

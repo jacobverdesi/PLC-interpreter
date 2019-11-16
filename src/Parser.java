@@ -14,10 +14,11 @@ public class Parser {
 
     public static List<List<String>> parseTable(List<String> lines){
         List<List<String>> matrix = new ArrayList<>();
-        List<String> prim= Arrays.asList(lines.get(0).strip().split("\t"));
+        String s=lines.get(0);
+        List<String> prim= Arrays.asList(s.split("\t"));
         matrix.add(prim);
         for(int i=1;i<lines.size();i++){
-            String line=lines.get(i).strip();
+            String line=lines.get(i);
             List<String> states=new ArrayList<String>(Collections.nCopies(prim.size(), ""));
             List<String>temp=Arrays.asList(line.split("\t"));
             for(int j=0;j<temp.size();j++){
