@@ -1,9 +1,11 @@
-Integer a = 10;
-while( a >= 0 ) { print( a ); a = a - 1; }
-
-while( a <= 10 ) { print( a ); a = a + 1; }
-String scream = "AH";
-print(a);
-a=a-1;
-while( a != 0 ) { scream = concat( scream, "H" ); a = a - 2; }
-print( scream );
+Integer a = 5;
+Void p( Integer y ) { print( y ); }
+p( 5 );
+p( 6 );
+print( a );
+while( a > 0 ) { p( a ); a = a - 1; }
+print( a );
+a = 5;
+Void x( Integer b ) { if( b > 0 ) { p( b ); x( b - 1 ); } }
+x( a );
+print( a );

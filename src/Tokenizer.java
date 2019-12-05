@@ -3,7 +3,6 @@ import java.io.*;
 import java.util.*;
 /**
  * Interpreter project
- * Scanner class?
  * @author: Jacob Verdesi jxv3386@rit.edu()
  */
 
@@ -97,6 +96,8 @@ public class Tokenizer {
                                 else if (state.getToken().equals("else")) state.reset(TERMINAL.ELSE);
                                 else if (state.getToken().equals("while")) state.reset(TERMINAL.WHILE);
                                 else if (state.getToken().equals("for")) state.reset(TERMINAL.FOR);
+                                else if (state.getToken().equals("Void")) state.reset(TERMINAL.VOID);
+                                else if (state.getToken().equals("return")) state.reset(TERMINAL.RETURN);
                                 else state.reset(TERMINAL.ID);
                             }
                             continue;

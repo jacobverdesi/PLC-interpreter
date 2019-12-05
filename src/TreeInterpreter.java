@@ -74,7 +74,14 @@ public class TreeInterpreter {
             throw new RuntimeError("Undelared Variable: "+child.get(0).toString(),0);
         }
     }
-
+    public static void handleFunc(TreeNode expr,TreeNode b_stmtls) throws RuntimeError {
+        List<Map.Entry<String,Object>> temp= ids;
+        if(!handleExpr(expr).equals(0)){
+            handleB_STMT(b_stmtls);
+        }
+        ids.clear();
+        ids=temp;
+    }
     public static void handleIf(TreeNode expr,TreeNode b_stmtls) throws RuntimeError {
         if(!handleExpr(expr).equals(0)){
             handleB_STMT(b_stmtls);
@@ -92,7 +99,6 @@ public class TreeInterpreter {
         while ((int)handleExprType(i_expr)!=0){
             handleB_STMT(b_stmtls);
         }
-
     }
     public static void handleFor(TreeNode asmt,TreeNode i_expr,TreeNode reasmt,TreeNode b_stmtls) throws RuntimeError {
         handleAsmt(asmt);

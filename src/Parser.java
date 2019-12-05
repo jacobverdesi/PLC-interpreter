@@ -2,7 +2,9 @@ import java.util.*;
 
 public class Parser {
     private static List<Map.Entry<String,Object>> ids= new ArrayList<>();
-
+    private static List<Map.Entry<String,Object>> Local= new ArrayList<>();
+    private static boolean inFunction;
+    private static List<Map.Entry<String,Object>> functions = new ArrayList<>();
     public static void printTable (List<List<String>> matrix){
         for(List<String> line: matrix){
             for(Object state:line){
@@ -10,7 +12,6 @@ public class Parser {
             }
             System.out.println();
         }
-
     }
     public static String getType(String currToken){
         String secondType;
@@ -66,28 +67,76 @@ public class Parser {
         }
         else return -1;
     }
-    private static TERMINAL handleID(TERMINAL currToken,String idName,String identifier){
+    private static TERMINAL handleID(TERMINAL currToken,String idName,String PreId,String postId){
         boolean found = false;
-        for (Map.Entry<String,Object> id:ids) {
-            if (id.getKey().equals(idName)) {
-                if (id.getValue().equals("Integer")){
-                    currToken = TERMINAL.I_ID;
-                } else if (id.getValue().equals("Double")) {
-                    currToken = TERMINAL.D_ID;
-                } else if (id.getValue().equals("String")) {
-                    currToken = TERMINAL.S_ID;
+        if(inFunction){
+            for (Map.Entry<String,Object> id:Local) {
+                if (id.getKey().equals(idName)) {
+                    if (id.getValue().equals("Integer")){
+                        currToken = TERMINAL.I_VAR;
+                    } else if (id.getValue().equals("Double")) {
+                        currToken = TERMINAL.D_VAR;
+                    } else if (id.getValue().equals("String")) {
+                        currToken = TERMINAL.S_VAR;
+                    }
+                    found=true;
+                }
+            }
+        }
+        else {
+            for (Map.Entry<String, Object> id : ids) {
+                if (id.getKey().equals(idName)) {
+                    if (id.getValue().equals("Integer")) {
+                        currToken = TERMINAL.I_VAR;
+                    } else if (id.getValue().equals("Double")) {
+                        currToken = TERMINAL.D_VAR;
+                    } else if (id.getValue().equals("String")) {
+                        currToken = TERMINAL.S_VAR;
+                    }
+                    found = true;
+                }
+            }
+        }
+        for (Map.Entry<String,Object> func:functions) {
+            if (func.getKey().equals(idName)) {
+                if (func.getValue().equals("Integer")){
+                    currToken = TERMINAL.I_FUNC;
+                } else if (func.getValue().equals("Double")) {
+                    currToken = TERMINAL.D_FUNC;
+                } else if (func.getValue().equals("String")) {
+                    currToken = TERMINAL.S_FUNC;
+                } else if (func.getValue().equals("Void")) {
+                    currToken = TERMINAL.V_FUNC;
                 }
                 found=true;
             }
         }
         if (!found){
-            if(identifier.equals("Integer") || identifier.equals("Double") || identifier.equals("String")) {
-                Map.Entry<String, Object> id = new AbstractMap.SimpleEntry<>(idName, identifier);
-                ids.add(id);
+            if(postId.equals("(")){
+                inFunction=true;
+                if (PreId.equals("Integer") || PreId.equals("Double") || PreId.equals("String")||PreId.equals("Void")) {
+                    Map.Entry<String, Object> id = new AbstractMap.SimpleEntry<>(idName, PreId);
+                    functions.add(id);
+                }
+                else{
+                    return null;
+                }
             }
-            else{
-                return null;
+            else {
+                if (PreId.equals("Integer") || PreId.equals("Double") || PreId.equals("String")) {
+                    Map.Entry<String, Object> id = new AbstractMap.SimpleEntry<>(idName, PreId);
+                    if(inFunction){
+                        Local.add(id);
+                    }
+                    else {
+                        ids.add(id);
+                    }
+                }
+                else{
+                    return null;
+                }
             }
+
         }
         return currToken;
     }
@@ -115,7 +164,8 @@ public class Parser {
             String idName=tokenList.get(tokenIndex).getKey();
             String identifier = stack.get(stack.size() - 2).toString();
             TERMINAL temp2=currToken;
-            currToken=handleID(currToken,idName,identifier);
+
+            currToken=handleID(currToken,idName,identifier,tokenList.get(tokenIndex+1).getKey());
             if(currToken==null) {
                 ids.clear();
                 throw new SyntaxError("Undefined variable: "+temp2,line);
@@ -144,7 +194,10 @@ public class Parser {
                     }
                 }
                 String rule=rules.get(Integer.parseInt(action.substring(1))).split(" ")[0];
-
+                if(rule.equals("FUNCTION")){
+                    Local.clear();
+                    inFunction=false;
+                }
                 TreeNode node = new TreeNode<>(rule,line);
 
                 for(int i=0;i<removed.size();i++){
@@ -173,16 +226,15 @@ public class Parser {
                 String idName = tokenList.get(tokenIndex).getKey();
                 String identifier = stack.get(stack.size() - 2).toString();
                 TERMINAL temp2 = currToken;
-                currToken = handleID(currToken,idName, identifier);
+                currToken = handleID(currToken,idName, identifier,tokenList.get(tokenIndex+1).getKey());
                 if (currToken == null) {
                     ids.clear();
                     throw new SyntaxError("Undefined variable: "+temp2,line);
                 }
             }
-
             if(actionIndex==-1) action=state.get(parseTable.get(0).indexOf(stack.peek().toString()));
             else action=state.get(parseTable.get(0).indexOf(currToken.toString()));
-            //System.out.printf("[%2d] %-60s %-70s [%3s]\n",line,stack,tokenList.subList(tokenIndex,tokenList.size()),action);
+            System.out.printf("[%2d] %-60s %-70s [%3s]\n",line,stack,tokenList.subList(tokenIndex,tokenList.size()),action);
 
             if(action.equals("")) {
                 TERMINAL token=tokenList.get(tokenIndex).getValue();

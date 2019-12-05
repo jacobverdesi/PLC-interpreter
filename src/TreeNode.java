@@ -1,6 +1,5 @@
 import java.util.*;
 
-
 public class TreeNode<T>{
 
     private T data;
