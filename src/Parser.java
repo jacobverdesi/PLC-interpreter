@@ -235,7 +235,6 @@ public class Parser {
             if(actionIndex==-1) action=state.get(parseTable.get(0).indexOf(stack.peek().toString()));
             else action=state.get(parseTable.get(0).indexOf(currToken.toString()));
             System.out.printf("[%2d] %-60s %-70s [%3s]\n",line,stack,tokenList.subList(tokenIndex,tokenList.size()),action);
-
             if(action.equals("")) {
                 TERMINAL token=tokenList.get(tokenIndex).getValue();
                 ids.clear();
