@@ -3,7 +3,7 @@ import java.util.*;
 public class Parser {
     private static List<Map.Entry<String,Object>> ids= new ArrayList<>();
     private static List<Map.Entry<String,Object>> Local= new ArrayList<>();
-    private static boolean inFunction;
+    private static boolean inFunction,inParam;
     private static List<Map.Entry<String,Object>> functions = new ArrayList<>();
     public static void printTable (List<List<String>> matrix){
         for(List<String> line: matrix){
@@ -69,21 +69,20 @@ public class Parser {
     }
     private static TERMINAL handleID(TERMINAL currToken,String idName,String PreId,String postId){
         boolean found = false;
-        if(inFunction){
-            for (Map.Entry<String,Object> id:Local) {
+        if(!inParam) {
+            for (Map.Entry<String, Object> id : Local) {
                 if (id.getKey().equals(idName)) {
-                    if (id.getValue().equals("Integer")){
+                    if (id.getValue().equals("Integer")) {
                         currToken = TERMINAL.I_VAR;
                     } else if (id.getValue().equals("Double")) {
                         currToken = TERMINAL.D_VAR;
                     } else if (id.getValue().equals("String")) {
                         currToken = TERMINAL.S_VAR;
                     }
-                    found=true;
+                    found = true;
                 }
             }
-        }
-        else {
+
             for (Map.Entry<String, Object> id : ids) {
                 if (id.getKey().equals(idName)) {
                     if (id.getValue().equals("Integer")) {
@@ -97,9 +96,10 @@ public class Parser {
                 }
             }
         }
+
         for (Map.Entry<String,Object> func:functions) {
             if (func.getKey().equals(idName)) {
-                if (func.getValue().equals("Integer")){
+                if (func.getValue().equals("Integer")) {
                     currToken = TERMINAL.I_FUNC;
                 } else if (func.getValue().equals("Double")) {
                     currToken = TERMINAL.D_FUNC;
@@ -108,12 +108,14 @@ public class Parser {
                 } else if (func.getValue().equals("Void")) {
                     currToken = TERMINAL.V_FUNC;
                 }
-                found=true;
+                found = true;
             }
         }
+
         if (!found){
             if(postId.equals("(")){
                 inFunction=true;
+                inParam=true;
                 if (PreId.equals("Integer") || PreId.equals("Double") || PreId.equals("String")||PreId.equals("Void")) {
                     Map.Entry<String, Object> id = new AbstractMap.SimpleEntry<>(idName, PreId);
                     functions.add(id);
@@ -194,9 +196,12 @@ public class Parser {
                     }
                 }
                 String rule=rules.get(Integer.parseInt(action.substring(1))).split(" ")[0];
+                if(rule.equals("PARAMETERS")){
+                    inParam=false;
+                }
                 if(rule.equals("FUNCTION")){
-                    Local.clear();
                     inFunction=false;
+                    Local.clear();
                 }
                 TreeNode node = new TreeNode<>(rule,line);
 
