@@ -427,6 +427,8 @@ public class TreeInterpreter {
             return ids2.get(id);
         }
         else {
+            rmDic(ids2);
+            rmDic(functions);
             throw new RuntimeError("Undeclared variable: " + id, treeNode.lineNum);
         }
     }

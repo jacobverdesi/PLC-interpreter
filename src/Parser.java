@@ -175,6 +175,9 @@ public class Parser {
             currToken=handleID(currToken,idName,identifier,tokenList.get(tokenIndex+1).getKey());
             if(currToken==null) {
                 ids.clear();
+                functions.clear();
+                inFunction=false;
+                inParam=false;
                 throw new SyntaxError("Undefined variable: "+temp2,line);
             }
         }
@@ -239,6 +242,9 @@ public class Parser {
                 currToken = handleID(currToken,idName, identifier,tokenList.get(tokenIndex+1).getKey());
                 if (currToken == null) {
                     ids.clear();
+                    functions.clear();
+                    inFunction=false;
+                    inParam=false;
                     throw new SyntaxError("Undefined variable: "+temp2,line);
                 }
             }
@@ -247,7 +253,6 @@ public class Parser {
             //System.out.printf("[%2d] %-60s %-70s [%3s]\n",line,stack,tokenList.subList(tokenIndex,tokenList.size()),action);
             if(action.equals("")) {
                 TERMINAL token=tokenList.get(tokenIndex).getValue();
-                ids.clear();
                 Object identifiyer=stack.get(stack.size()-4);
                 String firstType="";
                 String secondType="";
@@ -256,10 +261,17 @@ public class Parser {
                     if (identifiyer.toString().equals("=")){
 
                         secondType=getType(stack.get(stack.size()-2).toString());
+                        ids.clear();
+                        functions.clear();
+                        inFunction=false;
+                        inParam=false;
                         throw new SyntaxError("Invalid type in re-assignment: Expected Integer got "+secondType,line);
                     }else {
                         firstType=getType(stack.get(stack.size()-4).toString());
-
+                        ids.clear();
+                        functions.clear();
+                        inFunction=false;
+                        inParam=false;
                         throw new SyntaxError("Expected "+firstType+" got " + secondType, line);
                     }
 
@@ -272,6 +284,10 @@ public class Parser {
                         break;
                     }
                 }
+                ids.clear();
+                functions.clear();
+                inFunction=false;
+                inParam=false;
                 throw new SyntaxError("Expected "+expected+" got "+currToken,line);
 
             }
@@ -284,6 +300,9 @@ public class Parser {
         stack.pop();
         Object tree=stack.pop();
         ids.clear();
+        functions.clear();
+        inFunction=false;
+        inParam=false;
         TreeNode.reverseTree((TreeNode) tree);
         return  (TreeNode) tree;
     }

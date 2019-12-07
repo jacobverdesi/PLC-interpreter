@@ -11,7 +11,6 @@ To run this program:
 1. From the root directory, run "java -cp classes Jott tests/progN.j" in a terminal where N is test Number
 
 
-
 We created this project with a series of classes to interpret the file
 First off the program will read in the file along with a grammar and LALR parse table
 From this the program sends the jott file to the Tokenizer class which uses a DFA to tokenize the file
