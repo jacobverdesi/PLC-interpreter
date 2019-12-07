@@ -1,0 +1,1 @@
+SyntaxError: String expected but got Integer, 'String x = foo( 2 );' (prog19.j:2:12). 

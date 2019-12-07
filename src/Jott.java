@@ -80,8 +80,8 @@ public class Jott {
         String progFile=args[0];
         List<String> table = readFile("LALR(1) parse table");
         List<String> rules = readFile("GRAMMAR2");
-        jott(progFile,table,rules,true);
-        //ArrayList l= new ArrayList(Arrays.asList(0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,20,21,22,23,24));
+        jott(progFile,table,rules,false);
+        //ArrayList l= new ArrayList(Arrays.asList(0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28));
 
         //ArrayList l= new ArrayList(Arrays.asList(0,1,2,5,6,7,8,9,11,12,13,14,15,17,23,24));
         //ArrayList l= new ArrayList(Arrays.asList(3,4,10,16,17,21,22));

@@ -69,6 +69,7 @@ public class Parser {
     }
     private static TERMINAL handleID(TERMINAL currToken,String idName,String PreId,String postId){
         boolean found = false;
+
         if(!inParam) {
             for (Map.Entry<String, Object> id : Local) {
                 if (id.getKey().equals(idName)) {
@@ -82,17 +83,21 @@ public class Parser {
                     found = true;
                 }
             }
-
             for (Map.Entry<String, Object> id : ids) {
                 if (id.getKey().equals(idName)) {
-                    if (id.getValue().equals("Integer")) {
-                        currToken = TERMINAL.I_VAR;
-                    } else if (id.getValue().equals("Double")) {
-                        currToken = TERMINAL.D_VAR;
-                    } else if (id.getValue().equals("String")) {
-                        currToken = TERMINAL.S_VAR;
+                    if(inFunction&&(PreId.equals("Integer")||PreId.equals("Double")||PreId.equals("String"))&&postId.equals("=")){
+                        break;
                     }
-                    found = true;
+                    else {
+                        if (id.getValue().equals("Integer")) {
+                            currToken = TERMINAL.I_VAR;
+                        } else if (id.getValue().equals("Double")) {
+                            currToken = TERMINAL.D_VAR;
+                        } else if (id.getValue().equals("String")) {
+                            currToken = TERMINAL.S_VAR;
+                        }
+                        found = true;
+                    }
                 }
             }
         }
@@ -239,7 +244,7 @@ public class Parser {
             }
             if(actionIndex==-1) action=state.get(parseTable.get(0).indexOf(stack.peek().toString()));
             else action=state.get(parseTable.get(0).indexOf(currToken.toString()));
-            System.out.printf("[%2d] %-60s %-70s [%3s]\n",line,stack,tokenList.subList(tokenIndex,tokenList.size()),action);
+            //System.out.printf("[%2d] %-60s %-70s [%3s]\n",line,stack,tokenList.subList(tokenIndex,tokenList.size()),action);
             if(action.equals("")) {
                 TERMINAL token=tokenList.get(tokenIndex).getValue();
                 ids.clear();

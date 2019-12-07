@@ -1,0 +1,1 @@
+Syntax Error: Invalid type in re-assignment: Expected Integer got String, "x = "foobar";" (inputs/prog10.j:5)
